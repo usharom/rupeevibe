@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Home Loan EMI Calculator — RupeeVibe</title>
+<meta name="description" content="Calculate your home loan EMI, total interest, and full amortisation schedule. Supports prepayment simulation and tenure comparison.">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="shared.css">
+<link rel="icon" type="image/svg+xml" href="New%20folder/rupeevibe_favicon.svg">
+<style>
+  .breadcrumb { font-size: 13px; color: var(--text-light); padding: 14px 0 0; }
+  .breadcrumb a { color: var(--text-muted); text-decoration: none; }
+  .breadcrumb a:hover { color: var(--navy); }
+  .result-note { font-size: 12px; color: rgba(255,255,255,0.45); line-height: 1.5; margin-top: 16px; }
+  .breakdown-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.08); font-size: 14px; }
+  .breakdown-row:last-child { border-bottom: none; }
+  .breakdown-label { color: rgba(255,255,255,0.60); }
+  .breakdown-val { font-weight: 600; color: #fff; }
+
+  .donut-wrap { display: flex; align-items: center; gap: 20px; margin: 18px 0; }
+  .donut-legend { flex: 1; }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: rgba(255,255,255,0.7); margin-bottom: 8px; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+  .amort-table-wrap { max-height: 260px; overflow-y: auto; margin-top: 12px; border-radius: var(--radius-sm); }
+  .amort-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .amort-table th { position: sticky; top: 0; background: #0f2744; padding: 7px 10px; color: rgba(255,255,255,0.55); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; text-align: right; }
+  .amort-table th:first-child { text-align: left; }
+  .amort-table td { padding: 7px 10px; border-bottom: 1px solid rgba(255,255,255,0.05); color: rgba(255,255,255,0.85); text-align: right; }
+  .amort-table td:first-child { text-align: left; }
+
+  .compare-section { margin-top: 28px; }
+  .compare-section h3 { font-family: var(--font-display); font-size: 20px; color: var(--navy); margin-bottom: 16px; }
+  .compare-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  @media (max-width: 600px) { .compare-grid { grid-template-columns: 1fr; } }
+  .compare-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; text-align: center; }
+  .compare-card.active { border-color: var(--navy); background: var(--navy-light); }
+  .compare-tenure { font-size: 13px; color: var(--text-muted); margin-bottom: 6px; }
+  .compare-emi { font-family: var(--font-display); font-size: 20px; color: var(--navy); font-weight: 600; }
+  .compare-total { font-size: 12px; color: var(--text-light); margin-top: 4px; }
+  .compare-interest { font-size: 12px; color: var(--saffron); margin-top: 3px; font-weight: 600; }
+
+  .how-it-works { background: var(--card); border-radius: var(--radius-lg); padding: 28px 32px; border: 1px solid var(--border); margin-top: 28px; }
+  .how-it-works h3 { font-family: var(--font-display); font-size: 20px; color: var(--navy); margin-bottom: 16px; }
+  .how-it-works p { font-size: 14px; color: var(--text-muted); line-height: 1.7; margin-bottom: 12px; }
+  .how-it-works p:last-child { margin-bottom: 0; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="logo"><img src="New%20folder/rupeevibe_favicon.svg" alt="" class="logo-mark">Rupee<span class="logo-dot">Vibe</span></a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="index.html#calculators">Calculators</a>
+      <a href="blog-template.html">Blog</a>
+      <a href="about.html">About</a>
+    </div>
+  </div>
+</nav>
+
+<div class="page">
+  <div class="breadcrumb"><a href="index.html">Home</a> › <a href="index.html#calculators">Calculators</a> › Home Loan EMI</div>
+
+  <div class="page-hero">
+    <h1>🏠 Home Loan EMI Calculator</h1>
+    <p>Calculate your monthly EMI, total interest burden, and full amortisation schedule instantly.</p>
+  </div>
+
+  <!-- Ad top -->
+  <div class="ad-slot ad-banner" style="margin: 20px 0;">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" data-ad-slot="XXXXXXXXXX" data-ad-format="auto" data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  </div>
+
+  <div class="calc-layout">
+    <!-- Form -->
+    <div>
+      <div class="calc-form">
+        <div class="field">
+          <label>Loan Amount (₹)</label>
+          <input type="number" id="loanAmount" value="5000000" min="0" oninput="calculate()">
+          <div class="field-hint">Principal amount you wish to borrow</div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>Annual Interest Rate (%)</label>
+            <input type="number" id="interestRate" value="8.5" min="1" max="30" step="0.05" oninput="calculate()">
+            <div class="field-hint">SBI home loan: ~8.5–9%</div>
+          </div>
+          <div class="field">
+            <label>Loan Tenure (Years)</label>
+            <input type="number" id="tenure" value="20" min="1" max="30" oninput="calculate()">
+          </div>
+        </div>
+        <div class="field">
+          <label>Annual Prepayment (₹) <span style="font-weight:400;color:var(--text-light)">(optional)</span></label>
+          <input type="number" id="prepayment" value="0" min="0" oninput="calculate()">
+          <div class="field-hint">Extra payment made every year to reduce principal</div>
+        </div>
+        <button class="calc-btn" onclick="calculate()">Calculate EMI →</button>
+      </div>
+
+      <!-- Tenure comparison -->
+      <div class="compare-section">
+        <h3>Tenure Comparison</h3>
+        <div class="compare-grid" id="compareGrid"></div>
+      </div>
+
+      <div class="how-it-works" style="margin-top:28px">
+        <h3>About home loan EMIs</h3>
+        <p>Your EMI (Equated Monthly Instalment) is calculated using the standard reducing balance method. Each EMI repays both interest and principal — in early months, most of the EMI goes towards interest; as the loan progresses, the principal component rises.</p>
+        <p>Making even small annual prepayments can dramatically reduce your total interest outgo and shorten your loan tenure. Try entering a prepayment amount above to see the impact.</p>
+      </div>
+    </div>
+
+    <!-- Results -->
+    <div class="calc-results">
+      <div class="result-label">Monthly EMI</div>
+      <div class="result-value highlight" id="res-emi">₹—</div>
+
+      <hr class="result-divider" style="border-color:rgba(255,255,255,0.12); margin:16px 0;">
+
+      <div class="breakdown-row">
+        <span class="breakdown-label">Principal</span>
+        <span class="breakdown-val" id="res-principal">—</span>
+      </div>
+      <div class="breakdown-row">
+        <span class="breakdown-label">Total Interest</span>
+        <span class="breakdown-val" id="res-interest" style="color:#fbbf24">—</span>
+      </div>
+      <div class="breakdown-row">
+        <span class="breakdown-label">Total Payment</span>
+        <span class="breakdown-val" id="res-total">—</span>
+      </div>
+      <div id="prepay-section" style="display:none">
+        <hr class="result-divider" style="border-color:rgba(255,255,255,0.12); margin:16px 0;">
+        <div class="result-label" style="color:rgba(255,255,255,0.5)">With Prepayment</div>
+        <div class="breakdown-row">
+          <span class="breakdown-label">Effective Tenure</span>
+          <span class="breakdown-val" id="res-effTenure" style="color:#4ade80">—</span>
+        </div>
+        <div class="breakdown-row">
+          <span class="breakdown-label">Interest Saved</span>
+          <span class="breakdown-val" id="res-saved" style="color:#4ade80">—</span>
+        </div>
+      </div>
+
+      <!-- Donut chart SVG -->
+      <hr class="result-divider" style="border-color:rgba(255,255,255,0.12); margin:16px 0;">
+      <div class="donut-wrap">
+        <svg width="90" height="90" viewBox="0 0 90 90">
+          <circle cx="45" cy="45" r="35" fill="none" stroke="rgba(255,255,255,0.10)" stroke-width="14"/>
+          <circle id="donut-interest" cx="45" cy="45" r="35" fill="none" stroke="#e07b2a" stroke-width="14"
+            stroke-dasharray="220" stroke-dashoffset="220" stroke-linecap="butt"
+            transform="rotate(-90 45 45)" style="transition: stroke-dashoffset 0.5s ease"/>
+          <circle id="donut-principal" cx="45" cy="45" r="35" fill="none" stroke="#4ade80" stroke-width="14"
+            stroke-dasharray="220" stroke-dashoffset="220" stroke-linecap="butt"
+            transform="rotate(-90 45 45)" style="transition: stroke-dashoffset 0.5s ease"/>
+        </svg>
+        <div class="donut-legend">
+          <div class="legend-item"><span class="legend-dot" style="background:#4ade80"></span>Principal</div>
+          <div class="legend-item"><span class="legend-dot" style="background:#e07b2a"></span>Interest</div>
+        </div>
+      </div>
+
+      <div class="result-label" style="margin-bottom:8px;">Amortisation Schedule</div>
+      <div class="amort-table-wrap">
+        <table class="amort-table">
+          <thead><tr><th>Year</th><th>Principal</th><th>Interest</th><th>Balance</th></tr></thead>
+          <tbody id="amortBody"></tbody>
+        </table>
+      </div>
+
+      <p class="result-note">Based on reducing balance method. Actual terms depend on your lender.</p>
+    </div>
+  </div>
+
+  <!-- Ad bottom -->
+  <div class="ad-slot ad-banner" style="margin: 32px 0 0;">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" data-ad-slot="XXXXXXXXXX" data-ad-format="auto" data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-links">
+    <a href="index.html">Home</a>
+    <a href="retirement.html">Retirement</a>
+    <a href="sip.html">SIP Calculator</a>
+    <a href="homeloan.html">Home Loan EMI</a>
+    <a href="about.html">About</a>
+  </div>
+  <p>© 2025 RupeeVibe. Estimates only. Not financial advice.</p>
+</footer>
+
+<script>
+function fmt(n) {
+  if (n >= 10000000) return '₹' + (n / 10000000).toFixed(2) + ' Cr';
+  if (n >= 100000) return '₹' + (n / 100000).toFixed(2) + ' L';
+  return '₹' + Math.round(n).toLocaleString('en-IN');
+}
+
+function calcEMI(P, annualRate, years) {
+  const r = annualRate / 12 / 100;
+  const n = years * 12;
+  if (r === 0) return P / n;
+  return P * r * Math.pow(1 + r, n) / (Math.pow(1 + r, n) - 1);
+}
+
+function buildAmort(P, annualRate, years, annualPrepay) {
+  const r = annualRate / 12 / 100;
+  const emi = calcEMI(P, annualRate, years);
+  let balance = P;
+  const rows = [];
+  let totalInterest = 0;
+  let yr = 1;
+
+  while (balance > 0 && yr <= years + 5) {
+    let yearPrincipal = 0, yearInterest = 0;
+    for (let m = 1; m <= 12 && balance > 0; m++) {
+      const interest = balance * r;
+      let principal = Math.min(emi - interest, balance);
+      yearInterest += interest;
+      yearPrincipal += principal;
+      balance -= principal;
+      if (balance < 0) balance = 0;
+    }
+    if (annualPrepay > 0 && balance > 0) {
+      const extra = Math.min(annualPrepay, balance);
+      yearPrincipal += extra;
+      balance -= extra;
+    }
+    totalInterest += yearInterest;
+    rows.push({ year: yr, principal: yearPrincipal, interest: yearInterest, balance: Math.max(0, balance) });
+    yr++;
+    if (balance <= 0) break;
+  }
+  return { rows, totalInterest, effectiveTenure: yr - 1 };
+}
+
+function calculate() {
+  const P = parseFloat(document.getElementById('loanAmount').value) || 0;
+  const rate = parseFloat(document.getElementById('interestRate').value) || 8.5;
+  const tenure = parseFloat(document.getElementById('tenure').value) || 20;
+  const prepay = parseFloat(document.getElementById('prepayment').value) || 0;
+
+  const emi = calcEMI(P, rate, tenure);
+  const baseInterest = emi * tenure * 12 - P;
+
+  document.getElementById('res-emi').textContent = fmt(emi);
+  document.getElementById('res-principal').textContent = fmt(P);
+  document.getElementById('res-interest').textContent = fmt(baseInterest);
+  document.getElementById('res-total').textContent = fmt(P + baseInterest);
+
+  // Donut
+  const total = P + baseInterest;
+  const circumference = 2 * Math.PI * 35;
+  const principalFrac = P / total;
+  const interestFrac = baseInterest / total;
+  const dInterest = document.getElementById('donut-interest');
+  const dPrincipal = document.getElementById('donut-principal');
+  const interestLen = interestFrac * circumference;
+  const principalLen = principalFrac * circumference;
+  dInterest.setAttribute('stroke-dasharray', `${interestLen} ${circumference - interestLen}`);
+  dInterest.setAttribute('stroke-dashoffset', 0);
+  dPrincipal.setAttribute('stroke-dasharray', `${principalLen} ${circumference - principalLen}`);
+  dPrincipal.setAttribute('stroke-dashoffset', -interestLen);
+
+  // Prepayment
+  if (prepay > 0) {
+    const { rows, totalInterest, effectiveTenure } = buildAmort(P, rate, tenure, prepay);
+    document.getElementById('prepay-section').style.display = 'block';
+    document.getElementById('res-effTenure').textContent = effectiveTenure + ' years';
+    document.getElementById('res-saved').textContent = fmt(baseInterest - totalInterest);
+
+    const tbody = document.getElementById('amortBody');
+    tbody.innerHTML = rows.map(r =>
+      `<tr><td>${r.year}</td><td>${fmt(r.principal)}</td><td>${fmt(r.interest)}</td><td>${fmt(r.balance)}</td></tr>`
+    ).join('');
+  } else {
+    document.getElementById('prepay-section').style.display = 'none';
+    const { rows } = buildAmort(P, rate, tenure, 0);
+    const tbody = document.getElementById('amortBody');
+    tbody.innerHTML = rows.map(r =>
+      `<tr><td>${r.year}</td><td>${fmt(r.principal)}</td><td>${fmt(r.interest)}</td><td>${fmt(r.balance)}</td></tr>`
+    ).join('');
+  }
+
+  // Tenure comparison cards
+  const tenures = [10, 15, 20];
+  const grid = document.getElementById('compareGrid');
+  grid.innerHTML = tenures.map(t => {
+    const e = calcEMI(P, rate, t);
+    const interest = e * t * 12 - P;
+    const isActive = t === tenure;
+    return `<div class="compare-card ${isActive ? 'active' : ''}">
+      <div class="compare-tenure">${t}-Year Loan</div>
+      <div class="compare-emi">${fmt(e)}/mo</div>
+      <div class="compare-total">Total: ${fmt(P + interest)}</div>
+      <div class="compare-interest">Interest: ${fmt(interest)}</div>
+    </div>`;
+  }).join('');
+}
+
+window.onload = calculate;
+</script>
+</body>
+</html>

@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Retirement Calculator — RupeeVibe</title>
+<link rel="stylesheet" href="shared.css">
+<link rel="icon" type="image/svg+xml" href="New%20folder/rupeevibe_favicon.svg">
+<style>
+  /* Force the collapsible indicator (triangle) to appear */
+  details summary {
+    display: list-item; 
+    cursor: pointer;
+    padding: 15px;
+    background: var(--navy-light);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-display);
+    font-size: 18px;
+    color: var(--navy);
+    font-weight: 600;
+    margin-top: 20px;
+    outline: none;
+  }
+  details[open] summary {
+    margin-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .detail-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 10px; }
+  .detail-table th { text-align: left; padding: 10px; background: #f8fafc; color: var(--navy); border-bottom: 2px solid var(--border); }
+  .detail-table td { padding: 8px 10px; border-bottom: 1px solid var(--border); color: var(--text-muted); }
+  .big-expense-row { background: #fff7ed; font-weight: 600; color: #c2410c; }
+  .exhausted-row { background: #fef2f2; font-weight: 600; color: #b91c1c; }
+  h4 { margin-top: 20px; margin-bottom: 10px; color: var(--navy); font-family: var(--font-display); }
+  
+  /* Button Group Styling */
+  .btn-group { display: flex; gap: 12px; margin-top: 8px; }
+  .reset-btn {
+    flex: 1;
+    padding: 14px;
+    background: transparent;
+    color: var(--text-muted);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-body);
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.18s;
+  }
+  .reset-btn:hover { background: var(--bg); border-color: var(--text-light); color: var(--navy); }
+  .calc-btn { flex: 2; width: auto; margin-top: 0; } 
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="logo"><img src="New%20folder/rupeevibe_favicon.svg" alt="" class="logo-mark">Rupee<span class="logo-dot">Vibe</span></a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="index.html#calculators">Calculators</a>
+      <a href="blog-template.html">Blog</a>
+      <a href="about.html">About</a>
+    </div>
+  </div>
+</nav>
+
+<div class="page">
+  <div class="breadcrumb"><a href="index.html">Home</a> › <a href="index.html#calculators">Calculators</a> › Retirement</div>
+
+  <div class="page-hero">
+    <h1>🌅 Retirement Planning Calculator</h1>
+    <p>A comprehensive audit of your wealth journey, including big-ticket expenses and cash-flow tracking.</p>
+  </div>
+
+  <div class="calc-layout">
+    <div>
+      <div class="calc-form">
+        <div class="field">
+          <label>Current Monthly Expenses (₹)</label>
+          <input type="number" id="monthlyExp" value="50000">
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>Years to Retirement</label>
+            <input type="number" id="yearsToRetire" value="25">
+          </div>
+          <div class="field">
+            <label>Years of Retired Life</label>
+            <input type="number" id="yearsRetired" value="30">
+          </div>
+        </div>
+        <div class="field">
+          <label>Current Savings (₹)</label>
+          <input type="number" id="currentSavings" value="500000">
+        </div>
+        <div class="field">
+          <label>Monthly Savings (₹)</label>
+          <input type="number" id="monthlySavings" value="15000">
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>Big Ticket Expense (₹)</label>
+            <input type="number" id="bigExpense" value="2000000">
+          </div>
+          <div class="field">
+            <label>In How Many Years?</label>
+            <input type="number" id="bigExpenseYears" value="10">
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>Expected Return (%)</label>
+            <input type="number" id="returnRate" value="8">
+          </div>
+          <div class="field">
+            <label>Inflation Rate (%)</label>
+            <input type="number" id="inflationRate" value="6">
+          </div>
+        </div>
+        <div class="btn-group">
+          <button type="button" class="reset-btn" onclick="resetAll()">Reset All</button>
+          <button type="button" class="calc-btn" onclick="calculate()">Calculate Detailed Plan →</button>
+        </div>
+      </div>
+
+      <details id="detailsPanel">
+        <summary>See Detailed Year-by-Year Calculation</summary>
+        <div id="detailed-logs" class="how-it-works" style="border-top:none; border-top-left-radius:0; border-top-right-radius:0;">
+            <p style="color:var(--text-light)">Click calculate to generate the report.</p>
+        </div>
+      </details>
+    </div>
+
+    <div class="calc-results">
+      <div class="result-label">Corpus at Retirement</div>
+      <div class="result-value highlight" id="res-corpus">₹—</div>
+      <hr class="result-divider">
+      <div class="breakdown-row">
+        <span class="breakdown-label">Status</span>
+        <span class="breakdown-val" id="res-status" style="color:#4ade80">Ready</span>
+      </div>
+      <div class="breakdown-row">
+        <span class="breakdown-label">Final Wealth</span>
+        <span class="breakdown-val" id="res-final">₹—</span>
+      </div>
+      <p class="result-note">Yearly audit includes inflation-adjusted withdrawals and lump-sum deductions.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+function fmt(n) {
+  if (n >= 10000000) return '₹' + (n / 10000000).toFixed(2) + ' Cr';
+  if (n >= 100000) return '₹' + (n / 100000).toFixed(2) + ' L';
+  return '₹' + Math.round(n).toLocaleString('en-IN');
+}
+
+function resetAll() {
+  document.getElementById('monthlyExp').value = "";
+  document.getElementById('yearsToRetire').value = "";
+  document.getElementById('yearsRetired').value = "";
+  document.getElementById('currentSavings').value = "";
+  document.getElementById('monthlySavings').value = "";
+  document.getElementById('bigExpense').value = "";
+  document.getElementById('bigExpenseYears').value = "";
+  document.getElementById('returnRate').value = "8";
+  document.getElementById('inflationRate').value = "6";
+
+  document.getElementById("res-corpus").textContent = "₹—";
+  document.getElementById("res-final").textContent = "₹—";
+  document.getElementById("res-status").textContent = "Ready";
+  document.getElementById("res-status").style.color = "#4ade80";
+  document.getElementById("detailed-logs").innerHTML = '<p style="color:var(--text-light)">Click calculate to generate the report.</p>';
+  document.getElementById("detailsPanel").open = false;
+}
+
+function calculate() {
+  const data = {
+    expense: parseFloat(document.getElementById("monthlyExp").value) || 0,
+    yToR: parseInt(document.getElementById("yearsToRetire").value) || 0,
+    yRet: parseInt(document.getElementById("yearsRetired").value) || 30,
+    sav: parseFloat(document.getElementById("currentSavings").value) || 0,
+    mSav: parseFloat(document.getElementById("monthlySavings").value) || 0,
+    bigExpense: parseFloat(document.getElementById("bigExpense").value) || 0,
+    bigExpenseYears: parseInt(document.getElementById("bigExpenseYears").value) || 0,
+    rate: parseFloat(document.getElementById("returnRate").value) || 8,
+    inf: parseFloat(document.getElementById("inflationRate").value) || 6
+  };
+
+  let corpus = data.sav;
+  let logContent = "<h4>Phase 1: Accumulation</h4><table class='detail-table'><thead><tr><th>Year</th><th>Opening</th><th>Savings+Growth</th><th>Closing</th></tr></thead><tbody>";
+
+  for (let i = 1; i <= data.yToR; i++) {
+    let growth = corpus * (data.rate / 100);
+    let annualSavings = data.mSav * 12;
+    let opening = corpus;
+    
+    // Calculate end of year before deduction
+    corpus += annualSavings + growth;
+    
+    let note = "";
+    // Corrected check for Big Ticket Expense
+    if (i === data.bigExpenseYears) {
+      corpus -= data.bigExpense;
+      note = `<tr class="big-expense-row"><td colspan="4">Year ${i}: Deducted Big Ticket Expense ${fmt(data.bigExpense)}</td></tr>`;
+    }
+    
+    logContent += `<tr><td>Year ${i}</td><td>${fmt(opening)}</td><td>${fmt(growth + annualSavings)}</td><td>${fmt(corpus)}</td></tr>${note}`;
+  }
+  logContent += "</tbody></table>";
+  const corpusAtRetire = corpus;
+
+  let annualExp = data.expense * 12 * Math.pow(1 + data.inf / 100, data.yToR);
+  logContent += "<h4>Phase 2: Retirement</h4><table class='detail-table'><thead><tr><th>Year</th><th>Opening</th><th>Expense</th><th>Closing</th></tr></thead><tbody>";
+  
+  let ranOutYear = null;
+  for (let i = 1; i <= data.yRet; i++) {
+    let opening = corpus;
+    corpus -= annualExp;
+    let growth = corpus > 0 ? corpus * (data.rate / 100) : 0;
+    corpus += growth;
+
+    if (opening <= 0 && !ranOutYear) {
+      ranOutYear = i;
+      logContent += `<tr class="exhausted-row"><td colspan="4">⚠️ Corpus exhausted in Retirement Year ${i}</td></tr>`;
+    }
+    logContent += `<tr><td>Retire Yr ${i}</td><td>${fmt(opening)}</td><td>${fmt(annualExp)}</td><td>${fmt(Math.max(0, corpus))}</td></tr>`;
+    annualExp *= (1 + data.inf / 100);
+  }
+  logContent += "</tbody></table>";
+
+  document.getElementById('res-corpus').textContent = fmt(corpusAtRetire);
+  document.getElementById('res-final').textContent = fmt(Math.max(0, corpus));
+  document.getElementById('detailed-logs').innerHTML = logContent;
+  
+  const statusEl = document.getElementById('res-status');
+  if (ranOutYear) {
+    statusEl.textContent = `Runs out in Yr ${ranOutYear}`;
+    statusEl.style.color = "#fbbf24";
+  } else {
+    statusEl.textContent = "Safe Retirement";
+    statusEl.style.color = "#4ade80";
+  }
+}
+window.onload = calculate;
+</script>
+</body>
+</html>

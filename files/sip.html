@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SIP & Mutual Fund Calculator — RupeeVibe</title>
+<meta name="description" content="Calculate your SIP returns and mutual fund corpus. Compare lump sum vs monthly SIP and see how compounding grows your wealth over time.">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="shared.css">
+<link rel="icon" type="image/svg+xml" href="New%20folder/rupeevibe_favicon.svg">
+<style>
+  .breadcrumb { font-size: 13px; color: var(--text-light); padding: 14px 0 0; }
+  .breadcrumb a { color: var(--text-muted); text-decoration: none; }
+  .breadcrumb a:hover { color: var(--navy); }
+  .result-note { font-size: 12px; color: rgba(255,255,255,0.45); line-height: 1.5; margin-top: 16px; }
+  .breakdown-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.08); font-size: 14px; }
+  .breakdown-row:last-child { border-bottom: none; }
+  .breakdown-label { color: rgba(255,255,255,0.60); }
+  .breakdown-val { font-weight: 600; color: #fff; }
+
+  .mode-tabs { display: flex; gap: 0; margin-bottom: 28px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; }
+  .mode-tab { flex: 1; padding: 10px; text-align: center; font-size: 14px; font-weight: 600; cursor: pointer; background: transparent; border: none; color: var(--text-muted); font-family: var(--font-body); transition: background 0.15s, color 0.15s; }
+  .mode-tab.active { background: var(--navy); color: #fff; }
+
+  .how-it-works { background: var(--card); border-radius: var(--radius-lg); padding: 28px 32px; border: 1px solid var(--border); margin-top: 28px; }
+  .how-it-works h3 { font-family: var(--font-display); font-size: 20px; color: var(--navy); margin-bottom: 16px; }
+  .how-it-works p { font-size: 14px; color: var(--text-muted); line-height: 1.7; margin-bottom: 12px; }
+  .how-it-works p:last-child { margin-bottom: 0; }
+
+  .year-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 20px; }
+  .year-table th { text-align: left; padding: 8px 10px; background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.55); font-weight: 600; font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; }
+  .year-table td { padding: 8px 10px; border-bottom: 1px solid rgba(255,255,255,0.06); color: #fff; font-size: 13px; }
+  .year-table tr:last-child td { border-bottom: none; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="logo"><img src="New%20folder/rupeevibe_favicon.svg" alt="" class="logo-mark">Rupee<span class="logo-dot">Vibe</span></a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="index.html#calculators">Calculators</a>
+      <a href="blog-template.html">Blog</a>
+      <a href="about.html">About</a>
+    </div>
+  </div>
+</nav>
+
+<div class="page">
+  <div class="breadcrumb"><a href="index.html">Home</a> › <a href="index.html#calculators">Calculators</a> › SIP Calculator</div>
+
+  <div class="page-hero">
+    <h1>📈 SIP & Mutual Fund Calculator</h1>
+    <p>See how your investments grow with the magic of compounding. Compare SIP vs lump sum.</p>
+  </div>
+
+  <!-- Ad top -->
+  <div class="ad-slot ad-banner" style="margin: 20px 0;">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" data-ad-slot="XXXXXXXXXX" data-ad-format="auto" data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  </div>
+
+  <div class="calc-layout">
+    <!-- Form -->
+    <div>
+      <div class="calc-form">
+
+        <div class="mode-tabs">
+          <button class="mode-tab active" id="tab-sip" onclick="switchMode('sip')">Monthly SIP</button>
+          <button class="mode-tab" id="tab-lump" onclick="switchMode('lump')">Lump Sum</button>
+          <button class="mode-tab" id="tab-both" onclick="switchMode('both')">Compare Both</button>
+        </div>
+
+        <!-- SIP fields -->
+        <div id="fields-sip">
+          <div class="field">
+            <label>Monthly SIP Amount (₹)</label>
+            <input type="number" id="sipAmount" value="10000" min="500" oninput="calculate()">
+            <div class="field-hint">Amount you invest every month</div>
+          </div>
+        </div>
+
+        <!-- Lump sum fields -->
+        <div id="fields-lump" style="display:none">
+          <div class="field">
+            <label>Lump Sum Investment (₹)</label>
+            <input type="number" id="lumpAmount" value="500000" min="0" oninput="calculate()">
+          </div>
+        </div>
+
+        <!-- Both fields -->
+        <div id="fields-both" style="display:none">
+          <div class="field-row">
+            <div class="field">
+              <label>Monthly SIP (₹)</label>
+              <input type="number" id="bothSip" value="10000" min="0" oninput="calculate()">
+            </div>
+            <div class="field">
+              <label>Lump Sum (₹)</label>
+              <input type="number" id="bothLump" value="500000" min="0" oninput="calculate()">
+            </div>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label>Investment Duration (Years)</label>
+            <input type="number" id="duration" value="15" min="1" max="40" oninput="calculate()">
+          </div>
+          <div class="field">
+            <label>Expected Annual Return (%)</label>
+            <input type="number" id="sipReturn" value="12" min="1" max="30" step="0.5" oninput="calculate()">
+            <div class="field-hint">Equity MF avg: 10–14%</div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Step-up SIP Annually (%) <span style="font-weight:400;color:var(--text-light)">(optional)</span></label>
+          <input type="number" id="stepUp" value="0" min="0" max="30" step="1" oninput="calculate()">
+          <div class="field-hint">Increase SIP amount by this % each year</div>
+        </div>
+
+        <button class="calc-btn" onclick="calculate()">Calculate Returns →</button>
+      </div>
+
+      <div class="how-it-works">
+        <h3>Understanding SIP compounding</h3>
+        <p>A Systematic Investment Plan (SIP) lets you invest a fixed amount in a mutual fund every month. The power of SIPs comes from rupee cost averaging — you buy more units when markets are low and fewer when they're high.</p>
+        <p>The step-up feature reflects increasing your SIP by a fixed percentage each year (e.g. 10% annually), which can significantly boost your final corpus as your income grows.</p>
+      </div>
+    </div>
+
+    <!-- Results -->
+    <div class="calc-results" id="results">
+      <div id="sip-results">
+        <div class="result-label">Total Corpus (SIP)</div>
+        <div class="result-value highlight" id="res-corpus">₹—</div>
+        <hr class="result-divider" style="border-color:rgba(255,255,255,0.12); margin:16px 0;">
+        <div class="breakdown-row">
+          <span class="breakdown-label">Total Invested</span>
+          <span class="breakdown-val" id="res-invested">—</span>
+        </div>
+        <div class="breakdown-row">
+          <span class="breakdown-label">Total Gains</span>
+          <span class="breakdown-val" id="res-gains" style="color:#4ade80">—</span>
+        </div>
+        <div class="breakdown-row">
+          <span class="breakdown-label">Wealth Ratio</span>
+          <span class="breakdown-val" id="res-ratio">—</span>
+        </div>
+      </div>
+
+      <div id="lump-results" style="display:none">
+        <div class="result-label">Total Corpus (Lump Sum)</div>
+        <div class="result-value highlight" id="res-lump-corpus">₹—</div>
+        <hr class="result-divider" style="border-color:rgba(255,255,255,0.12); margin:16px 0;">
+        <div class="breakdown-row">
+          <span class="breakdown-label">Amount Invested</span>
+          <span class="breakdown-val" id="res-lump-invested">—</span>
+        </div>
+        <div class="breakdown-row">
+          <span class="breakdown-label">Total Gains</span>
+          <span class="breakdown-val" id="res-lump-gains" style="color:#4ade80">—</span>
+        </div>
+      </div>
+
+      <div id="both-results" style="display:none">
+        <div class="result-label">SIP Corpus</div>
+        <div class="result-value" id="res-both-sip">₹—</div>
+        <div class="result-label">Lump Sum Corpus</div>
+        <div class="result-value" id="res-both-lump">₹—</div>
+        <hr class="result-divider" style="border-color:rgba(255,255,255,0.12); margin:16px 0;">
+        <div class="result-label">Combined Total</div>
+        <div class="result-value highlight" id="res-both-total">₹—</div>
+      </div>
+
+      <hr class="result-divider" style="border-color:rgba(255,255,255,0.12); margin:16px 0;">
+      <div class="result-label" style="margin-bottom:8px">Year-by-Year Growth</div>
+      <table class="year-table" id="yearTable">
+        <thead><tr><th>Year</th><th>Invested</th><th>Value</th></tr></thead>
+        <tbody id="yearBody"></tbody>
+      </table>
+
+      <p class="result-note">Assumes constant returns. Actual mutual fund returns vary. Past performance is not indicative of future results.</p>
+    </div>
+  </div>
+
+  <!-- Ad bottom -->
+  <div class="ad-slot ad-banner" style="margin: 32px 0 0;">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" data-ad-slot="XXXXXXXXXX" data-ad-format="auto" data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-links">
+    <a href="index.html">Home</a>
+    <a href="retirement.html">Retirement</a>
+    <a href="sip.html">SIP Calculator</a>
+    <a href="homeloan.html">Home Loan EMI</a>
+    <a href="about.html">About</a>
+  </div>
+  <p>© 2025 RupeeVibe. Estimates only. Not financial advice.</p>
+</footer>
+
+<script>
+let currentMode = 'sip';
+
+function switchMode(mode) {
+  currentMode = mode;
+  ['sip','lump','both'].forEach(m => {
+    document.getElementById('tab-' + m).classList.toggle('active', m === mode);
+    document.getElementById('fields-' + m).style.display = m === mode ? 'block' : 'none';
+    document.getElementById(m + '-results').style.display = m === mode ? 'block' : 'none';
+  });
+  calculate();
+}
+
+function fmt(n) {
+  if (n >= 10000000) return '₹' + (n / 10000000).toFixed(2) + ' Cr';
+  if (n >= 100000) return '₹' + (n / 100000).toFixed(2) + ' L';
+  return '₹' + Math.round(n).toLocaleString('en-IN');
+}
+
+function calcSIP(monthly, years, annualRate, stepUpPct) {
+  const monthlyRate = annualRate / 12 / 100;
+  let corpus = 0;
+  let totalInvested = 0;
+  let currentSIP = monthly;
+  const yearlyData = [];
+
+  for (let y = 1; y <= years; y++) {
+    for (let m = 1; m <= 12; m++) {
+      corpus = (corpus + currentSIP) * (1 + monthlyRate);
+      totalInvested += currentSIP;
+    }
+    yearlyData.push({ year: y, invested: totalInvested, value: corpus });
+    if (stepUpPct > 0) currentSIP = currentSIP * (1 + stepUpPct / 100);
+  }
+  return { corpus, totalInvested, yearlyData };
+}
+
+function calcLump(amount, years, annualRate) {
+  const corpus = amount * Math.pow(1 + annualRate / 100, years);
+  const yearlyData = [];
+  for (let y = 1; y <= years; y++) {
+    yearlyData.push({ year: y, invested: amount, value: amount * Math.pow(1 + annualRate / 100, y) });
+  }
+  return { corpus, yearlyData };
+}
+
+function buildYearTable(rows) {
+  const tbody = document.getElementById('yearBody');
+  tbody.innerHTML = rows.map(r =>
+    `<tr><td>${r.year}</td><td>${fmt(r.invested)}</td><td>${fmt(r.value)}</td></tr>`
+  ).join('');
+}
+
+function calculate() {
+  const years = parseFloat(document.getElementById('duration').value) || 15;
+  const rate = parseFloat(document.getElementById('sipReturn').value) || 12;
+  const stepUp = parseFloat(document.getElementById('stepUp').value) || 0;
+
+  if (currentMode === 'sip') {
+    const monthly = parseFloat(document.getElementById('sipAmount').value) || 0;
+    const { corpus, totalInvested, yearlyData } = calcSIP(monthly, years, rate, stepUp);
+    document.getElementById('res-corpus').textContent = fmt(corpus);
+    document.getElementById('res-invested').textContent = fmt(totalInvested);
+    document.getElementById('res-gains').textContent = fmt(corpus - totalInvested);
+    document.getElementById('res-ratio').textContent = (corpus / totalInvested).toFixed(2) + 'x';
+    buildYearTable(yearlyData);
+  } else if (currentMode === 'lump') {
+    const amount = parseFloat(document.getElementById('lumpAmount').value) || 0;
+    const { corpus, yearlyData } = calcLump(amount, years, rate);
+    document.getElementById('res-lump-corpus').textContent = fmt(corpus);
+    document.getElementById('res-lump-invested').textContent = fmt(amount);
+    document.getElementById('res-lump-gains').textContent = fmt(corpus - amount);
+    buildYearTable(yearlyData);
+  } else {
+    const monthly = parseFloat(document.getElementById('bothSip').value) || 0;
+    const lumpAmt = parseFloat(document.getElementById('bothLump').value) || 0;
+    const sipRes = calcSIP(monthly, years, rate, stepUp);
+    const lumpRes = calcLump(lumpAmt, years, rate);
+    document.getElementById('res-both-sip').textContent = fmt(sipRes.corpus);
+    document.getElementById('res-both-lump').textContent = fmt(lumpRes.corpus);
+    document.getElementById('res-both-total').textContent = fmt(sipRes.corpus + lumpRes.corpus);
+    const combined = sipRes.yearlyData.map((r, i) => ({
+      year: r.year, invested: r.invested + lumpRes.yearlyData[i].invested,
+      value: r.value + lumpRes.yearlyData[i].value
+    }));
+    buildYearTable(combined);
+  }
+}
+
+window.onload = () => { switchMode('sip'); calculate(); };
+</script>
+</body>
+</html>
