@@ -62,6 +62,10 @@ nav {
   align-items: center;
   gap: 8px;
 }
+.logo-text {
+  display: inline-flex;
+  gap: 0;
+}
 .logo-mark {
   width: 32px;
   height: 32px;
@@ -69,6 +73,7 @@ nav {
   flex-shrink: 0;
 }
 .logo-dot { color: var(--saffron); }
+/* no extra text spacing; brand stays RupeeVibe */
 .nav-links { display: flex; gap: 6px; }
 .nav-links a {
   color: rgba(255,255,255,0.72);
