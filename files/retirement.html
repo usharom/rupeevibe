@@ -48,6 +48,9 @@
     transition: all 0.18s;
   }
   .reset-btn:hover { background: var(--bg); border-color: var(--text-light); color: var(--navy); }
+  .breadcrumb { font-size: 13px; color: var(--text-light); padding: 14px 0 0; }
+  .breadcrumb a { color: var(--text-muted); text-decoration: none; }
+  .breadcrumb a:hover { color: var(--navy); }
   .calc-btn { flex: 2; width: auto; margin-top: 0; } 
 </style>
 </head>
@@ -61,6 +64,11 @@
       <a href="index.html#calculators">Calculators</a>
       <a href="blog-template.html">Blog</a>
       <a href="about.html">About</a>
+    </div>
+    <div class="hamburger" onclick="toggleMenu()">
+      <span></span>
+      <span></span>
+      <span></span>
     </div>
   </div>
 </nav>
@@ -243,7 +251,22 @@ function calculate() {
     statusEl.style.color = "#4ade80";
   }
 }
+function toggleMenu() {
+  document.querySelector('.nav-links').classList.toggle('mobile-open');
+}
 window.onload = calculate;
 </script>
+
+<footer>
+  <div class="footer-links">
+    <a href="index.html">Home</a>
+    <a href="retirement.html">Retirement</a>
+    <a href="sip.html">SIP Calculator</a>
+    <a href="homeloan.html">Home Loan EMI</a>
+    <a href="about.html">About</a>
+  </div>
+  <p>© 2026 RupeeVibe. Estimates only. Not financial advice.</p>
+</footer>
+
 </body>
 </html>

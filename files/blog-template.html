@@ -113,6 +113,11 @@
       <a href="blog-template.html" class="active">Blog</a>
       <a href="about.html">About</a>
     </div>
+    <div class="hamburger" onclick="toggleMenu()">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
   </div>
 </nav>
 
@@ -181,7 +186,14 @@
     <a href="blog-template.html">Blog</a>
     <a href="about.html">About</a>
   </div>
-  <p>© 2025 RupeeVibe. Estimates only. Not financial advice.</p>
+  <p>© 2026 RupeeVibe. Estimates only. Not financial advice.</p>
 </footer>
+
+<script>
+function toggleMenu() {
+  document.querySelector('.nav-links').classList.toggle('mobile-open');
+}
+</script>
+
 </body>
 </html>
