@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Direct Vs. Regular Mutual Fund Switch Calculator — RupeeVibe</title>
+<link rel="stylesheet" href="shared.css">
+<link rel="icon" type="image/svg+xml" href="New%20folder/rupeevibe_favicon.svg">
+<!-- Replace ca-pub-XXXXXXXXXXXXXXXX with your real AdSense Publisher ID -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-GENRJHSEDE"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-GENRJHSEDE');
+</script>
+<style>
+  details summary {
+    display: list-item; 
+    cursor: pointer;
+    padding: 15px;
+    background: var(--navy-light);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-display);
+    font-size: 18px;
+    color: var(--navy);
+    font-weight: 600;
+    margin-top: 20px;
+    outline: none;
+  }
+  .detail-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 10px; }
+  .detail-table th { text-align: left; padding: 10px; background: #f8fafc; color: var(--navy); border-bottom: 2px solid var(--border); }
+  .detail-table td { padding: 8px 10px; border-bottom: 1px solid var(--border); color: var(--text-muted); }
+  .switch-win { background: #f0fdf4; font-weight: 600; color: #166534; }
+  .tax-row { background: #fef2f2; font-weight: 600; color: #b91c1c; }
+  .btn-group { display: flex; gap: 12px; margin-top: 8px; }
+  .reset-btn { flex: 1; padding: 14px; background: transparent; color: var(--text-muted); border: 1.5px solid var(--border); border-radius: var(--radius-sm); font-weight: 600; cursor: pointer; }
+  .calc-btn { flex: 2; width: auto; margin-top: 0; }
+  .breadcrumb { font-size: 13px; color: var(--text-light); padding: 14px 0 0; }
+  .breadcrumb a { color: var(--text-muted); text-decoration: none; }
+</style>
+</head>
+<body>
+
+<!-- ── Navigation ── -->
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="logo"><img src="New%20folder/rupeevibe_favicon.svg" alt="" class="logo-mark"><span class="logo-text">Rupee<span class="logo-dot">Vibe</span></span></a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="index.html#calculators">Calculators</a>
+      <a href="blog-template.html">Blog</a>
+      <a href="about.html">About</a>
+    </div>
+    <div class="hamburger" onclick="toggleMenu()">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  </div>
+</nav>
+
+<div class="page">
+  <div class="breadcrumb"><a href="index.html">Home</a> › <a href="index.html#calculators">Calculators</a> › Direct vs Regular</div>
+
+  <div class="page-hero">
+    <h1>🔄 Mutual Fund Switch Calculator</h1>
+    <p>Calculate if saving on commissions outweighs the 12.5% LTCG tax impact. Please note that this calculator deducts ₹1.25 lakh from the capital gain, assuming that the investor has no other capital gains in the financial year, apart from this fund. If you have other equity investments, please consider their tax implications as well.</p>
+  </div>
+
+  <div class="calc-layout">
+    <div>
+      <div class="calc-form">
+        <div class="field">
+          <label>Fund Name</label>
+          <input type="text" id="fundName" placeholder="e.g. Bluechip Fund">
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>Invested Amount (₹)</label>
+            <input type="number" id="investedAmt" value="500000">
+          </div>
+          <div class="field">
+            <label>Current Value (₹)</label>
+            <input type="number" id="currentValue" value="800000">
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>Regular Exp. Ratio (%)</label>
+            <input type="number" id="regER" value="1.8" step="0.01">
+          </div>
+          <div class="field">
+            <label>Direct Exp. Ratio (%)</label>
+            <input type="number" id="dirER" value="0.5" step="0.01">
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>Expected Return (%)</label>
+            <input type="number" id="marketReturn" value="12">
+          </div>
+          <div class="field">
+            <label>Horizon (Years)</label>
+            <input type="number" id="horizon" value="15">
+          </div>
+        </div>
+        <div class="btn-group">
+          <button type="button" class="reset-btn" onclick="location.reload()">Reset</button>
+          <button type="button" class="calc-btn" onclick="calculateSwitch()">Compare Plans →</button>
+        </div>
+      </div>
+
+      <details id="detailsPanel">
+        <summary>Year-by-Year Growth Comparison</summary>
+        <div id="detailed-logs" class="how-it-works">
+            <p style="color:var(--text-light)">Run calculation to see the break-even analysis.</p>
+        </div>
+      </details>
+    </div>
+
+    <div class="calc-results">
+      <div class="result-label">Net Gain from Switching</div>
+      <div class="result-value highlight" id="res-diff">₹—</div>
+      <hr class="result-divider">
+      <div class="breakdown-row">
+        <span class="breakdown-label">LTCG Tax at Switch</span>
+        <span class="breakdown-val" id="res-tax" style="color:#f87171">₹—</span>
+      </div>
+      <div class="breakdown-row">
+        <span class="breakdown-label">Breakeven Period</span>
+        <span class="breakdown-val" id="res-breakeven">Calculating...</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Footer ── -->
+<footer>
+  <div class="footer-links">
+    <a href="index.html">Home</a>
+    <a href="retirement.html">Retirement Calculator</a>
+    <a href="sip.html">SIP Calculator</a>
+    <a href="homeloan.html">Home Loan EMI</a>
+    <a href="direct-vs-regular.html">Direct vs Regular</a>
+    <a href="blog-template.html">Blog</a>
+    <a href="about.html">About</a>
+  </div>
+  <p>© 2026 RupeeVibe. All calculations are estimates for planning purposes only. Not financial advice.</p>
+</footer>
+
+<script>
+function toggleMenu() {
+  document.querySelector('.nav-links').classList.toggle('mobile-open');
+}
+
+function fmt(n) {
+  const absN = Math.abs(n);
+  let res = '';
+  if (absN >= 10000000) res = '₹' + (absN / 10000000).toFixed(2) + ' Cr';
+  else if (absN >= 100000) res = '₹' + (absN / 100000).toFixed(2) + ' L';
+  else res = '₹' + Math.round(absN).toLocaleString('en-IN');
+  return n < 0 ? '-' + res : res;
+}
+
+function calculateSwitch() {
+  const invested = parseFloat(document.getElementById("investedAmt").value) || 0;
+  const current = parseFloat(document.getElementById("currentValue").value) || 0;
+  const regER = parseFloat(document.getElementById("regER").value) || 0;
+  const dirER = parseFloat(document.getElementById("dirER").value) || 0;
+  const mktReturn = parseFloat(document.getElementById("marketReturn").value) || 0;
+  const years = parseInt(document.getElementById("horizon").value) || 10;
+
+  // 1. LTCG Tax (12.5% on gains above 1.25L)
+  const gain = Math.max(0, current - invested);
+  const taxable = Math.max(0, gain - 125000);
+  const tax = taxable * 0.125;
+  const postTaxStart = current - tax;
+
+  document.getElementById('res-tax').textContent = fmt(tax);
+
+  let regVal = current;
+  let dirVal = postTaxStart;
+  let breakevenYear = null;
+
+  let log = `<table class='detail-table'><thead><tr><th>Year</th><th>Stay Regular</th><th>Switch to Direct</th><th>Benefit</th></tr></thead><tbody>`;
+  log += `<tr class="tax-row"><td>Year 0</td><td>${fmt(regVal)}</td><td>${fmt(dirVal)}</td><td>${fmt(dirVal - regVal)}</td></tr>`;
+
+  for (let i = 1; i <= years; i++) {
+    // CORRECT COMPOUNDING: Growth applied, then fees deducted from the NEW total
+    regVal = regVal * (1 + (mktReturn / 100)) * (1 - (regER / 100));
+    dirVal = dirVal * (1 + (mktReturn / 100)) * (1 - (dirER / 100));
+
+    let diff = dirVal - regVal;
+    let rowClass = diff > 0 ? "switch-win" : "";
+    if (diff > 0 && !breakevenYear) breakevenYear = i;
+
+    log += `<tr class="${rowClass}"><td>Year ${i}</td><td>${fmt(regVal)}</td><td>${fmt(dirVal)}</td><td>${(diff > 0 ? '+' : '') + fmt(diff)}</td></tr>`;
+  }
+  log += "</tbody></table>";
+
+  const finalDiff = dirVal - regVal;
+  document.getElementById('res-diff').textContent = (finalDiff > 0 ? '+' : '') + fmt(finalDiff);
+  document.getElementById('res-diff').style.color = finalDiff > 0 ? "#4ade80" : "#f87171";
+  document.getElementById('detailed-logs').innerHTML = log;
+  document.getElementById('detailsPanel').open = true;
+  
+  const bElement = document.getElementById('res-breakeven');
+  if (breakevenYear) {
+    bElement.textContent = breakevenYear + " Years";
+    bElement.style.color = "#4ade80";
+  } else {
+    bElement.textContent = "Over " + years + " yrs";
+    bElement.style.color = "#f87171";
+  }
+}
+</script>
+</body>
+</html>
