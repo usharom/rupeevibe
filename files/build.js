@@ -30,7 +30,8 @@ const pageFiles = [
   'sip.html',
   'homeloan.html',
   'blog-template.html',
-  'about.html'
+  'about.html',
+  'direct-vs-regular.html'
 ];
 
 /**
