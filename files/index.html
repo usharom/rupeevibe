@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RupeeVibe — Free Financial Calculators for India</title>
-<meta name="description" content="Plan your retirement, calculate SIP returns, and estimate home loan EMIs with free, India-specific financial calculators. Built for Indian investors.">
+<meta name="description" content="Plan your retirement, calculate SIP returns, compare debt funds vs FDs, and estimate home loan EMIs with free, India-specific financial calculators. Built for Indian investors.">
  <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-GENRJHSEDE"></script>
 <script>
@@ -144,7 +144,7 @@
   .tile-retirement::after { background: linear-gradient(90deg, #1a6b45, #4CAF50); }
   .tile-sip::after { background: linear-gradient(90deg, var(--navy), #3a7bd5); }
   .tile-home::after { background: linear-gradient(90deg, var(--saffron), #f5a623); }
-  .tile-direct::after { background: linear-gradient(90deg, var(--navy), #3a7bd5); }
+  .tile-debt::after { background: linear-gradient(90deg, #7c3aed, #a855f7); }
 
   .tile-icon {
     width: 52px; height: 52px;
@@ -154,7 +154,7 @@
   }
   .tile-icon-green { background: var(--green-light); }
   .tile-icon-blue { background: var(--navy-light); }
-  .tile-icon-orange { background: var(--saffron-light); }
+  .tile-icon-purple { background: linear-gradient(135deg, #e9d5ff, #f3e8ff); color: #7c3aed; }
 
   .tile-tag {
     display: inline-block;
@@ -169,7 +169,7 @@
   }
   .tag-green { background: var(--green-light); color: var(--green); }
   .tag-blue { background: var(--navy-light); color: var(--navy); }
-  .tag-orange { background: var(--saffron-light); color: var(--saffron); }
+  .tag-purple { background: linear-gradient(135deg, #e9d5ff, #f3e8ff); color: #7c3aed; }
 
   .tile-title {
     font-family: var(--font-display);
@@ -260,7 +260,7 @@
 <!-- ── Stats bar ── -->
 <div class="stats-bar">
   <div class="stats-inner">
-    <div class="stat"><div class="stat-num">4</div><div class="stat-label">Free Calculators</div></div>
+    <div class="stat"><div class="stat-num">5</div><div class="stat-label">Free Calculators</div></div>
     <div class="stat"><div class="stat-num">₹</div><div class="stat-label">Rupee-First Design</div></div>
     <div class="stat"><div class="stat-num">0</div><div class="stat-label">Sign-ups Required</div></div>
     <div class="stat"><div class="stat-num">100%</div><div class="stat-label">Free Forever</div></div>
@@ -324,6 +324,15 @@
         <div class="tile-title">Direct vs Regular Mutual Fund Switch Calculator</div>
         <p class="tile-desc">Calculate if saving on commissions outweighs the 12.5% LTCG tax impact when switching from regular to direct mutual funds.</p>
         <div class="tile-cta">Compare plans <span class="tile-arrow">→</span></div>
+      </a>
+
+      <!-- Debt Fund vs FD -->
+      <a href="debt-fund-vs-fd-calculator.html" class="calc-tile tile-debt">
+        <div class="tile-icon tile-icon-purple">💰</div>
+        <span class="tile-tag tag-purple">Investment</span>
+        <div class="tile-title">Debt Fund Vs FD Return Comparison Calculator</div>
+        <p class="tile-desc">Compare debt fund returns vs fixed deposits with our free calculator that accounts for yearly taxation. See the real difference in long-term returns.</p>
+        <div class="tile-cta">Compare investments <span class="tile-arrow">→</span></div>
       </a>
 
     </div>
