@@ -237,6 +237,17 @@ function calculate() {
   for (let i = 1; i <= data.yRet; i++) {
     let opening = corpus;
     corpus -= annualExp;
+
+    // Calculate the absolute timeline year from today
+    let absoluteYear = data.yToR + i;
+    let note = "";
+
+    // Check if the big expense happens during this retirement year
+    if (absoluteYear === data.bigExpenseYears) {
+      corpus -= data.bigExpense;
+      note = `<tr class="big-expense-row"><td colspan="4">Retire Yr ${i} (Absolute Year ${absoluteYear}): Deducted Big Ticket Expense ${fmt(data.bigExpense)}</td></tr>`;
+    }
+
     let growth = corpus > 0 ? corpus * (data.rate / 100) : 0;
     corpus += growth;
 
@@ -244,7 +255,9 @@ function calculate() {
       ranOutYear = i;
       logContent += `<tr class="exhausted-row"><td colspan="4">⚠️ Corpus exhausted in Retirement Year ${i}</td></tr>`;
     }
-    logContent += `<tr><td>Retire Yr ${i}</td><td>${fmt(opening)}</td><td>${fmt(annualExp)}</td><td>${fmt(Math.max(0, corpus))}</td></tr>`;
+
+    logContent += `<tr><td>Retire Yr ${i}</td><td>${fmt(opening)}</td><td>${fmt(annualExp)}</td><td>${fmt(Math.max(0, corpus))}</td></tr>${note}`;
+
     annualExp *= (1 + data.inf / 100);
   }
   logContent += "</tbody></table>";
