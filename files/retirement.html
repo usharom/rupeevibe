@@ -63,6 +63,15 @@
   .breadcrumb a { color: var(--text-muted); text-decoration: none; }
   .breadcrumb a:hover { color: var(--navy); }
   .calc-btn { flex: 2; width: auto; margin-top: 0; } 
+  /* Dynamic Expense Rows Styling */
+  .expense-row { display: flex; gap: 8px; margin-bottom: 10px; }
+  .expense-row input { flex: 1; padding: 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-family: var(--font-body); font-size: 14px; width: 100%; box-sizing: border-box; background: #fff; }
+  .expense-row input:focus { outline: none; border-color: var(--navy); }
+  .remove-btn { background: #fee2e2; color: #ef4444; border: none; border-radius: var(--radius-sm); padding: 0 15px; cursor: pointer; font-weight: bold; font-size: 20px; transition: 0.2s; }
+  .remove-btn:hover:not(:disabled) { background: #fca5a5; color: #b91c1c; }
+  .remove-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .add-btn { background: #f8fafc; color: var(--navy); border: 1.5px dashed var(--border); padding: 12px; width: 100%; border-radius: var(--radius-sm); cursor: pointer; font-weight: 600; margin-bottom: 15px; transition: 0.2s; }
+  .add-btn:hover { border-color: var(--navy); background: #f1f5f9; }
 </style>
 </head>
 <body>
@@ -89,7 +98,16 @@
 
   <div class="page-hero">
     <h1>🌅 Retirement Planning Calculator</h1>
-    <p>A comprehensive audit of your wealth journey, including big-ticket expenses and cash-flow tracking.</p>
+    <p>Track your retirement readiness by mapping inflation and investment growth against your living expenses and up to 10 future life goals.</p>
+    
+    <details style="margin-top: 8px;">
+      <summary style="font-size: 14px; color: #ea580c; cursor: pointer; display: inline-block; font-weight: 600; outline: none; list-style: none;">
+        How to use ▾
+      </summary>
+      <div style="font-size: 13px; color: var(--text-muted); margin-top: 6px; max-width: 650px; line-height: 1.5;">
+        Enter your present savings, monthly contributions, and market expectations. Click <strong>"+ Add Another Goal"</strong> to add major expenses at future expected rates (like a house or wedding) based on <em>how many years from now</em> they will occur. Run the calculation to audit your timeline.
+      </div>
+    </details>
   </div>
 
   <div class="calc-layout">
@@ -117,15 +135,17 @@
           <label>Monthly Savings (₹)</label>
           <input type="number" id="monthlySavings" value="15000">
         </div>
-        <div class="field-row">
-          <div class="field">
-            <label>Big Ticket Expense (₹)</label>
-            <input type="number" id="bigExpense" value="2000000">
+        <div id="expenses-wrapper" style="background: #f8fafc; border: 1px solid var(--border); padding: 20px; border-radius: var(--radius-sm); margin-bottom: 20px;">
+          <label style="color: var(--navy); margin-bottom: 12px; font-size: 14px; font-weight: 700;">Major Goals / Big Expenses (Max 10)</label>
+          <div id="expenses-container">
+            <div class="expense-row">
+              <input type="text" class="exp-name" placeholder="Goal (e.g., House)">
+              <input type="number" class="exp-amount" placeholder="Amount (₹)">
+              <input type="number" class="exp-year" placeholder="Years from now (e.g., 5)">
+              <button type="button" class="remove-btn" onclick="removeExpense(this)" disabled>×</button>
+            </div>
           </div>
-          <div class="field">
-            <label>In How Many Years?</label>
-            <input type="number" id="bigExpenseYears" value="10">
-          </div>
+          <button type="button" class="add-btn" onclick="addExpense()">+ Add Another Goal</button>
         </div>
         <div class="field-row">
           <div class="field">
@@ -175,16 +195,57 @@ function fmt(n) {
   return '₹' + Math.round(n).toLocaleString('en-IN');
 }
 
+// --- Dynamic Row Management ---
+function addExpense() {
+  const container = document.getElementById('expenses-container');
+  if (container.children.length >= 10) {
+    alert("You can add a maximum of 10 goals.");
+    return;
+  }
+  
+  const row = document.createElement('div');
+  row.className = 'expense-row';
+  row.innerHTML = `
+    <input type="text" class="exp-name" placeholder="Goal (e.g., House)">
+    <input type="number" class="exp-amount" placeholder="Amount (₹)">
+    <input type="number" class="exp-year" placeholder="Years from now (e.g., 5)">
+    <button type="button" class="remove-btn" onclick="removeExpense(this)">×</button>
+  `;
+  container.appendChild(row);
+  updateRemoveButtons();
+}
+
+function removeExpense(btn) {
+  const container = document.getElementById('expenses-container');
+  if (container.children.length > 1) {
+    btn.parentElement.remove();
+  }
+  updateRemoveButtons();
+}
+
+function updateRemoveButtons() {
+  const buttons = document.querySelectorAll('.remove-btn');
+  buttons.forEach(btn => btn.disabled = buttons.length === 1);
+}
+
+// --- Core Logic ---
 function resetAll() {
   document.getElementById('monthlyExp').value = "";
   document.getElementById('yearsToRetire').value = "";
   document.getElementById('yearsRetired').value = "";
   document.getElementById('currentSavings').value = "";
   document.getElementById('monthlySavings').value = "";
-  document.getElementById('bigExpense').value = "";
-  document.getElementById('bigExpenseYears').value = "";
   document.getElementById('returnRate').value = "8";
   document.getElementById('inflationRate').value = "6";
+
+  const container = document.getElementById('expenses-container');
+  container.innerHTML = `
+    <div class="expense-row">
+      <input type="text" class="exp-name" placeholder="Goal (e.g., House)">
+      <input type="number" class="exp-amount" placeholder="Amount (₹)">
+      <input type="number" class="exp-year" placeholder="Years from now">
+      <button type="button" class="remove-btn" onclick="removeExpense(this)" disabled>×</button>
+    </div>`;
 
   document.getElementById("res-corpus").textContent = "₹—";
   document.getElementById("res-final").textContent = "₹—";
@@ -201,84 +262,125 @@ function calculate() {
     yRet: parseInt(document.getElementById("yearsRetired").value) || 30,
     sav: parseFloat(document.getElementById("currentSavings").value) || 0,
     mSav: parseFloat(document.getElementById("monthlySavings").value) || 0,
-    bigExpense: parseFloat(document.getElementById("bigExpense").value) || 0,
-    bigExpenseYears: parseInt(document.getElementById("bigExpenseYears").value) || 0,
     rate: parseFloat(document.getElementById("returnRate").value) || 8,
     inf: parseFloat(document.getElementById("inflationRate").value) || 6
   };
 
-  let corpus = data.sav;
-  let logContent = "<h4>Phase 1: Accumulation</h4><table class='detail-table'><thead><tr><th>Year</th><th>Opening</th><th>Savings+Growth</th><th>Closing</th></tr></thead><tbody>";
+  const currentYear = new Date().getFullYear();
 
+  let goals = [];
+  document.querySelectorAll('.expense-row').forEach(row => {
+    let name = row.querySelector('.exp-name').value || "Unnamed Goal";
+    let amt = parseFloat(row.querySelector('.exp-amount').value) || 0;
+    let yr = parseInt(row.querySelector('.exp-year').value) || 0;
+    
+    if (amt > 0 && yr > 0) {
+      goals.push({ name: name, amount: amt, year: yr, funded: false });
+    }
+  });
+
+  let corpus = data.sav;
+  let logContent = "<h4>Phase 1: Accumulation</h4><table class='detail-table'><thead><tr><th>Timeline</th><th>Opening Balance</th><th>Savings Added</th><th>Growth Earned</th><th>Closing Balance</th></tr></thead><tbody>";
+  let ranOutYear = null;
+
+  // PHASE 1: Accumulation
   for (let i = 1; i <= data.yToR; i++) {
-    let growth = corpus * (data.rate / 100);
+    let growth = corpus > 0 ? corpus * (data.rate / 100) : 0;
     let annualSavings = data.mSav * 12;
     let opening = corpus;
+    let displayYear = currentYear + i;
     
-    // Calculate end of year before deduction
     corpus += annualSavings + growth;
     
     let note = "";
-    // Corrected check for Big Ticket Expense
-    if (i === data.bigExpenseYears) {
-      corpus -= data.bigExpense;
-      note = `<tr class="big-expense-row"><td colspan="4">Year ${i}: Deducted Big Ticket Expense ${fmt(data.bigExpense)}</td></tr>`;
-    }
+    let currentYearGoals = goals.filter(g => g.year === i);
+    currentYearGoals.forEach(g => {
+      if (corpus > 0) {
+        corpus -= g.amount;
+        g.funded = true;
+        note += `<tr class="big-expense-row"><td colspan="5">🎯 Year ${displayYear} (Timeline Year ${i}): Deducted Goal &mdash; "${g.name}" (-${fmt(g.amount)})</td></tr>`;
+      }
+    });
     
-    logContent += `<tr><td>Year ${i}</td><td>${fmt(opening)}</td><td>${fmt(growth + annualSavings)}</td><td>${fmt(corpus)}</td></tr>${note}`;
+    if (corpus <= 0 && !ranOutYear) {
+      ranOutYear = displayYear;
+      logContent += `<tr class="exhausted-row"><td colspan="5">⚠️ Corpus exhausted in Year ${displayYear}</td></tr>`;
+    }
+
+    logContent += `<tr><td>Year ${i} (${displayYear})</td><td>${fmt(opening)}</td><td>+${fmt(annualSavings)}</td><td>+${fmt(growth)}</td><td>${fmt(corpus)}</td></tr>${note}`;
   }
   logContent += "</tbody></table>";
   const corpusAtRetire = corpus;
 
   let annualExp = data.expense * 12 * Math.pow(1 + data.inf / 100, data.yToR);
-  logContent += "<h4>Phase 2: Retirement</h4><table class='detail-table'><thead><tr><th>Year</th><th>Opening</th><th>Expense</th><th>Closing</th></tr></thead><tbody>";
+  logContent += "<h4>Phase 2: Retirement</h4><table class='detail-table'><thead><tr><th>Timeline</th><th>Opening Balance</th><th>Living Expense</th><th>Growth Earned</th><th>Closing Balance</th></tr></thead><tbody>";
   
-  let ranOutYear = null;
+  // PHASE 2: Retirement
   for (let i = 1; i <= data.yRet; i++) {
     let opening = corpus;
-    corpus -= annualExp;
-
-    // Calculate the absolute timeline year from today
-    let absoluteYear = data.yToR + i;
+    let absoluteYear = data.yToR + i; 
+    let displayYear = currentYear + absoluteYear;
     let note = "";
 
-    // Check if the big expense happens during this retirement year
-    if (absoluteYear === data.bigExpenseYears) {
-      corpus -= data.bigExpense;
-      note = `<tr class="big-expense-row"><td colspan="4">Retire Yr ${i} (Absolute Year ${absoluteYear}): Deducted Big Ticket Expense ${fmt(data.bigExpense)}</td></tr>`;
-    }
+    if (corpus > 0) corpus -= annualExp;
+    
+    let currentYearGoals = goals.filter(g => g.year === absoluteYear);
+    currentYearGoals.forEach(g => {
+      if (corpus > 0) {
+        corpus -= g.amount;
+        g.funded = true;
+        note += `<tr class="big-expense-row"><td colspan="5">🎯 Year ${displayYear} (Retire Yr ${i} / Timeline Yr ${absoluteYear}): Deducted Goal &mdash; "${g.name}" (-${fmt(g.amount)})</td></tr>`;
+      }
+    });
 
     let growth = corpus > 0 ? corpus * (data.rate / 100) : 0;
     corpus += growth;
 
-    if (opening <= 0 && !ranOutYear) {
-      ranOutYear = i;
-      logContent += `<tr class="exhausted-row"><td colspan="4">⚠️ Corpus exhausted in Retirement Year ${i}</td></tr>`;
+    if (corpus <= 0 && !ranOutYear) {
+      ranOutYear = displayYear; 
+      logContent += `<tr class="exhausted-row"><td colspan="5">⚠️ Corpus exhausted in Retirement Year ${i} (${displayYear})</td></tr>`;
     }
 
-    logContent += `<tr><td>Retire Yr ${i}</td><td>${fmt(opening)}</td><td>${fmt(annualExp)}</td><td>${fmt(Math.max(0, corpus))}</td></tr>${note}`;
-
+    logContent += `<tr><td>Retire Yr ${i} (${displayYear})</td><td>${fmt(opening)}</td><td>-${fmt(annualExp)}</td><td>+${fmt(growth)}</td><td>${fmt(Math.max(0, corpus))}</td></tr>${note}`;
     annualExp *= (1 + data.inf / 100);
   }
   logContent += "</tbody></table>";
 
-  document.getElementById('res-corpus').textContent = fmt(corpusAtRetire);
+  let missedGoals = goals.filter(g => !g.funded).map(g => g.name);
+
+  document.getElementById('res-corpus').textContent = fmt(Math.max(0, corpusAtRetire));
   document.getElementById('res-final').textContent = fmt(Math.max(0, corpus));
   document.getElementById('detailed-logs').innerHTML = logContent;
   
   const statusEl = document.getElementById('res-status');
   if (ranOutYear) {
-    statusEl.textContent = `Runs out in Yr ${ranOutYear}`;
+    let errorMsg = `Runs out in Year ${ranOutYear}.`;
+    if (missedGoals.length > 0) {
+      errorMsg += `<br><span style="font-size:11px; color:#f87171; display:block; margin-top:5px; font-weight:normal;">Unfunded Goals: ${missedGoals.join(', ')}</span>`;
+    }
+    statusEl.innerHTML = errorMsg;
     statusEl.style.color = "#fbbf24";
   } else {
     statusEl.textContent = "Safe Retirement";
     statusEl.style.color = "#4ade80";
   }
 }
+
 function toggleMenu() {
   document.querySelector('.nav-links').classList.toggle('mobile-open');
 }
-window.onload = calculate;
+
+window.onload = function() {
+  updateRemoveButtons();
+  calculate();
+  
+  // Intercept scroll wheel events on focused number inputs to protect user entries
+  document.querySelectorAll('input[type=number]').forEach(input => {
+    input.addEventListener('wheel', function(e) {
+      e.preventDefault();
+    });
+  });
+};
 </script>
 
 <footer>
