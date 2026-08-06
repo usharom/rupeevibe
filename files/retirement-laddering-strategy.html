@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Retirement Laddering Simulator — RupeeVibe</title>
+<style>
+  /* --- RUPEEVIBE BASE STYLES --- */
+  :root {
+    --navy: #0f172a;
+    --navy-light: #f1f5f9;
+    --border: #e2e8f0;
+    --text-muted: #475569;
+    --text-light: #64748b;
+    --bg: #f8fafc;
+    --radius-sm: 8px;
+    --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --font-display: "Georgia", serif;
+    --primary: #ea580c; 
+    --saffron: #e07b2a;
+  }
+
+  body {
+    font-family: var(--font-body);
+    background: var(--bg);
+    color: var(--navy);
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+  }
+
+  /* Shared site navigation and footer */
+  nav { background: var(--navy); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid rgba(255,255,255,0.07); }
+  .nav-inner { max-width: 1100px; margin: 0 auto; padding: 0 24px; height: 62px; display: flex; align-items: center; justify-content: space-between; }
+  .logo { font-family: var(--font-display); font-size: 22px; color: #fff; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; }
+  .logo-text { display: inline-flex; }
+  .logo-mark { width: 32px; height: 32px; object-fit: contain; flex-shrink: 0; }
+  .logo-dot { color: var(--saffron); }
+  .nav-links { display: flex; gap: 6px; }
+  .nav-links a { color: rgba(255,255,255,0.72); text-decoration: none; font-size: 14px; font-weight: 500; padding: 6px 14px; border-radius: var(--radius-sm); transition: background 0.18s, color 0.18s; }
+  .nav-links a:hover, .nav-links a.active { background: rgba(255,255,255,0.10); color: #fff; }
+  .hamburger { display: none; flex-direction: column; cursor: pointer; padding: 6px; border-radius: var(--radius-sm); }
+  .hamburger span { width: 20px; height: 2px; background: #fff; margin: 3px 0; }
+  footer { background: var(--navy); color: rgba(255,255,255,0.55); text-align: center; padding: 28px 24px; font-size: 13px; margin-top: 60px; }
+  footer a { color: rgba(255,255,255,0.72); text-decoration: none; }
+  footer a:hover { color: #fff; }
+  footer .footer-links { display: flex; justify-content: center; gap: 20px; margin-bottom: 12px; flex-wrap: wrap; }
+  footer p { margin: 0; }
+
+  @media (max-width: 760px) {
+    .nav-links a { padding: 6px 10px; font-size: 13px; }
+    .hamburger { display: flex; }
+    .nav-links { position: absolute; top: 62px; left: 0; right: 0; background: var(--navy); flex-direction: column; padding: 20px 24px; display: none; border-top: 1px solid rgba(255,255,255,0.07); }
+    .nav-links.mobile-open { display: flex; }
+  }
+
+  .page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px 20px 60px 20px;
+  }
+
+  .page-hero h1 {
+    font-family: var(--font-display);
+    font-size: 32px;
+    margin-bottom: 10px;
+  }
+
+  .page-hero p {
+    color: var(--text-muted);
+    font-size: 16px;
+    margin-top: 0;
+    max-width: 800px;
+  }
+
+  /* Explanation Section */
+  .strategy-guide {
+    background: white;
+    border: 1px solid var(--border);
+    padding: 25px 30px;
+    border-radius: 12px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  }
+  .strategy-guide h2 { font-size: 20px; margin-top: 0; font-family: var(--font-display); color: var(--navy); }
+  .strategy-guide h3 { font-size: 15px; margin-top: 25px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .strategy-guide ul { padding-left: 20px; margin: 10px 0; }
+  .strategy-guide li { margin-bottom: 8px; color: var(--text-muted); }
+  .strategy-guide strong { color: var(--navy); }
+
+  /* Layout Structure - Updated to Vertical Stack */
+  .calc-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+  }
+  .calc-form {
+    width: 100%;
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border);
+    box-sizing: border-box;
+  }
+  .calc-results {
+    width: 100%;
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border);
+    box-sizing: border-box;
+  }
+
+  /* Form Elements */
+  .field { margin-bottom: 20px; }
+  .field-row { display: flex; gap: 20px; flex-wrap: wrap; }
+  .field-row > div { flex: 1; min-width: 200px; }
+  
+  label {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+  }
+
+  input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 16px;
+    box-sizing: border-box;
+    font-family: var(--font-body);
+    background: var(--bg);
+  }
+  input:focus { outline: none; border-color: var(--navy); }
+  
+  .section-label {
+    margin: 25px 0 15px 0;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--navy-light);
+    font-weight: bold;
+    color: var(--navy);
+  }
+
+  .calc-btn {
+    width: 100%;
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 16px;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-body);
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    margin-top: 15px;
+  }
+  .calc-btn:hover { opacity: 0.9; }
+
+  /* Initial Allocations Dashboard */
+  .dashboard-grid {
+    display: none; 
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); 
+    gap: 15px; 
+    margin-bottom: 30px;
+  }
+  .bucket-card {
+    background: #f8fafc;
+    border: 1px solid var(--border);
+    padding: 20px;
+    border-radius: var(--radius-sm);
+  }
+  .bucket-title {
+    font-size: 12px;
+    font-weight: bold;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 5px;
+  }
+  .bucket-val {
+    font-size: 26px;
+    font-family: var(--font-display);
+    color: var(--navy);
+    font-weight: bold;
+  }
+
+  /* Result Table */
+  .table-wrapper { overflow-x: auto; }
+  .detail-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .detail-table th { text-align: right; padding: 12px; background: var(--navy-light); color: var(--navy); border-bottom: 2px solid var(--border); white-space: nowrap; }
+  .detail-table th:first-child { text-align: left; }
+  .detail-table td { text-align: right; padding: 12px; border-bottom: 1px solid var(--border); color: var(--text-muted); white-space: nowrap; }
+  .detail-table td:first-child { text-align: left; font-weight: bold; color: var(--navy); }
+  
+  .transfer-col { color: #059669 !important; font-weight: 600; background: #ecfdf5; }
+  .danger-text { color: #dc2626 !important; font-weight: bold; }
+  
+  .sheet-link {
+    display: block;
+    text-align: center;
+    margin-top: 20px;
+    font-size: 13px;
+    color: var(--text-light);
+  }
+  .sheet-link a { color: var(--primary); text-decoration: none; font-weight: 600; }
+  .sheet-link a:hover { text-decoration: underline; }
+
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="logo"><img src="New%20folder/rupeevibe_favicon.svg" alt="" class="logo-mark"><span class="logo-text">Rupee<span class="logo-dot">Vibe</span></span></a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="index.html#calculators" class="active">Calculators</a>
+      <a href="blog-template.html">Blog</a>
+      <a href="about.html">About</a>
+    </div>
+    <div class="hamburger" onclick="toggleMenu()">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  </div>
+</nav>
+
+<div class="page">
+  <div class="page-hero">
+    <h1>🪜 Bucket Laddering Simulator</h1>
+    <p>A smart cash-flow protection strategy that insulates your retirement from stock market crashes (Sequence of Returns Risk).</p>
+  </div>
+
+  <div class="strategy-guide">
+    <h2>How the Bucket Strategy Works</h2>
+    <p style="color: var(--text-muted); margin-bottom: 15px;">Instead of keeping all your retirement money in one giant mixed portfolio, you divide it into distinct buckets based on <em>when</em> you need the money. This ensures you never have to sell equity investments during a market downturn.</p>
+    
+    <div style="display: flex; gap: 20px; flex-wrap: wrap; font-size: 14px;">
+      <div style="flex: 1; min-width: 200px; padding: 15px; background: #f8fafc; border-radius: 8px;">
+        <strong>🪣 Bucket 1 (Liquid)</strong><br>
+        Holds <strong>5 years</strong> of living expenses in ultra-safe instruments (e.g., Liquid Funds, FDs). You spend directly from here.
+      </div>
+      <div style="flex: 1; min-width: 200px; padding: 15px; background: #f8fafc; border-radius: 8px;">
+        <strong>🪣 Bucket 2 (Balanced)</strong><br>
+        Holds another <strong>5 years</strong> of expenses. Moderate risk/return (e.g., Balanced Advantage Funds) acting as a growth bridge.
+      </div>
+      <div style="flex: 1; min-width: 200px; padding: 15px; background: #f8fafc; border-radius: 8px;">
+        <strong>🪣 Bucket 3 (Equity)</strong><br>
+        Holds the <strong>remainder</strong> of your wealth. High-growth Equity to beat long-term inflation. Has a 10+ year time horizon to recover from dips.
+      </div>
+    </div>
+
+    <h3>The "Waterfall" Refill Mechanism</h3>
+    <ul>
+      <li>Every <strong>4 years</strong>, profits are siphoned from Bucket 2 (Balanced) to completely refill Bucket 1 (Liquid).</li>
+      <li>One year later (Year 5, 9, 13...), profits from Bucket 3 (Equity) are siphoned to refill Bucket 2.</li>
+      <li>A separate <strong>3-year Emergency Fund</strong> sits completely untouched, acting as a final safety net for medical shocks.</li>
+    </ul>
+  </div>
+
+  <div class="calc-layout">
+    <!-- TOP SECTION: CONTROLS -->
+    <div class="calc-form">
+      <div class="section-label" style="margin-top: 0;">Core Assumptions</div>
+      <div class="field-row">
+        <div class="field">
+          <label>Total Initial Corpus (₹)</label>
+          <input type="text" inputmode="numeric" id="in_corpus" value="2,00,00,000">
+        </div>
+        <div class="field">
+          <label>Yr 1 Annual Expense (₹)</label>
+          <input type="text" inputmode="numeric" id="in_exp" value="8,40,000">
+        </div>
+        <div class="field">
+          <label>Inflation Rate (%)</label>
+          <input type="number" id="in_inf" value="6">
+        </div>
+      </div>
+
+      <div class="section-label">Expected Annual Returns</div>
+      <div class="field-row">
+        <div class="field">
+          <label>Liquid Fund (%)</label>
+          <input type="number" id="in_r_liq" value="6">
+        </div>
+        <div class="field">
+          <label>Balanced / BAF (%)</label>
+          <input type="number" id="in_r_baf" value="10">
+        </div>
+        <div class="field">
+          <label>Multi-Cap / Equity (%)</label>
+          <input type="number" id="in_r_multi" value="12">
+        </div>
+        <div class="field">
+          <label>Emergency Fund (%)</label>
+          <input type="number" id="in_r_emerg" value="6">
+        </div>
+      </div>
+
+      <button type="button" class="calc-btn" onclick="runSimulation()">Run Waterfall Simulation &darr;</button>
+      
+      <div class="sheet-link">
+  Advanced user? <a href="https://docs.google.com/spreadsheets/d/1D2M3Y7ZnhSWpb2hmADZTj1Uu8E4MBjULjIGMOCfC8E4/edit?usp=sharing" target="_blank">Access the raw Google Sheet</a> (View-only: File > Make a Copy to edit).
+</div>
+    </div>
+
+    <!-- BOTTOM SECTION: RESULTS -->
+    <div class="calc-results" id="results-section">
+      <div id="error-box" style="display: none; padding: 15px; background: #fef2f2; color: #dc2626; border-radius: 8px; margin-bottom: 20px; font-weight: 500; font-size: 14px;"></div>
+      
+      <!-- Initial Allocations Dashboard -->
+      <div class="dashboard-grid" id="allocations-dashboard">
+        <div class="bucket-card">
+          <div class="bucket-title">Bucket 1 (Liquid)</div>
+          <div class="bucket-val" id="val-liq">₹0</div>
+        </div>
+        <div class="bucket-card">
+          <div class="bucket-title">Bucket 2 (Balanced)</div>
+          <div class="bucket-val" id="val-baf">₹0</div>
+        </div>
+        <div class="bucket-card">
+          <div class="bucket-title">Bucket 3 (Equity)</div>
+          <div class="bucket-val" style="color: var(--primary);" id="val-multi">₹0</div>
+        </div>
+        <div class="bucket-card">
+          <div class="bucket-title">Emergency Fund</div>
+          <div class="bucket-val" id="val-emerg">₹0</div>
+        </div>
+      </div>
+
+      <!-- Data Table -->
+      <div class="table-wrapper">
+        <table class="detail-table" id="result-table">
+          <thead>
+            <tr>
+              <th>Year</th>
+              <th>Annual Expense</th>
+              <th>Transfer (Multi &rarr; BAF)</th>
+              <th>Transfer (BAF &rarr; Liq)</th>
+              <th>Liquid Balance</th>
+              <th>BAF Balance</th>
+              <th>Multi-Cap Balance</th>
+              <th>Emergency Balance</th>
+              <th style="color:var(--primary)">Total Corpus</th>
+            </tr>
+          </thead>
+          <tbody id="result-body">
+            <!-- Data populated via JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Exact comma-separated formatter
+function fmt(n) {
+  if (n === 0) return '₹0';
+  if (n < 0) return '-₹' + Math.abs(Math.round(n)).toLocaleString('en-IN');
+  return '₹' + Math.round(n).toLocaleString('en-IN');
+}
+
+function runSimulation() {
+  const errBox = document.getElementById('error-box');
+  const tbody = document.getElementById('result-body');
+  const dashboard = document.getElementById('allocations-dashboard');
+  
+  errBox.style.display = 'none';
+  tbody.innerHTML = '';
+
+  // Get inputs
+  let corpus = parseFloat(document.getElementById('in_corpus').value.replace(/,/g, '')) || 0;
+  let exp_1 = parseFloat(document.getElementById('in_exp').value.replace(/,/g, '')) || 0;
+  let inf = parseFloat(document.getElementById('in_inf').value) / 100 || 0;
+  
+  let r_liq = parseFloat(document.getElementById('in_r_liq').value) / 100 || 0;
+  let r_baf = parseFloat(document.getElementById('in_r_baf').value) / 100 || 0;
+  let r_multi = parseFloat(document.getElementById('in_r_multi').value) / 100 || 0;
+  let r_emerg = parseFloat(document.getElementById('in_r_emerg').value) / 100 || 0;
+
+  // Initial Allocations (13x Rule)
+  let liq = 5 * exp_1;
+  let baf = 5 * exp_1;
+  let emerg = 3 * exp_1;
+  let multi = corpus - liq - baf - emerg;
+
+  if (multi < 0) {
+    dashboard.style.display = 'none';
+    errBox.style.display = 'block';
+    errBox.innerHTML = `⚠️ <strong>Insufficient Starting Corpus.</strong> To fund the safety buckets (Liquid + BAF + Emergency), you need at least 13x your Year 1 expense (${fmt(13 * exp_1)}). Please increase your corpus or lower your starting expense.`;
+    return;
+  }
+
+  // Populate Initial Allocations Dashboard
+  dashboard.style.display = 'grid';
+  document.getElementById('val-liq').textContent = fmt(liq);
+  document.getElementById('val-baf').textContent = fmt(baf);
+  document.getElementById('val-multi').textContent = fmt(multi);
+  document.getElementById('val-emerg').textContent = fmt(emerg);
+
+  // Pre-calculate inflation-adjusted expenses
+  let exps = [];
+  for(let i = 0; i <= 45; i++) {
+    exps.push(exp_1 * Math.pow(1 + inf, i));
+  }
+
+  let htmlContent = "";
+
+  // Run 40 Year Loop
+  for(let y = 1; y <= 40; y++) {
+    let curr_exp = exps[y-1];
+    let b2l = 0;
+    let m2b = 0;
+
+    // 1. Refill Liquid Bucket every 4 years (Years 4, 8, 12...)
+    if (y % 4 === 0) {
+      let target_liq = exps[y] + exps[y+1] + exps[y+2] + exps[y+3]; // Need to fund the *next* 4 years
+      b2l = Math.max(0, target_liq - (liq - curr_exp));
+      b2l = Math.min(baf, b2l); // Cannot transfer more than what exists in BAF
+    }
+
+    // 2. Refill BAF Bucket every 4 years (Years 5, 9, 13...)
+    if ((y - 1) % 4 === 0 && y > 1) {
+      let target_baf = 5 * curr_exp; // BAF targets 5x current year's expense
+      m2b = Math.max(0, target_baf - baf); 
+      m2b = Math.min(multi, m2b); // Cannot transfer more than what exists in Multi
+    }
+
+    // Apply Expenses, Transfers, and Growth
+    liq = (liq - curr_exp + b2l) * (1 + r_liq);
+    baf = (baf - b2l + m2b) * (1 + r_baf);
+    multi = (multi - m2b) * (1 + r_multi);
+    emerg = emerg * (1 + r_emerg);
+    
+    let totalCorpus = liq + baf + multi + emerg;
+
+    // Row Styling Flags
+    let classM2B = m2b > 0 ? 'transfer-col' : '';
+    let classB2L = b2l > 0 ? 'transfer-col' : '';
+    let classTotal = totalCorpus < curr_exp ? 'danger-text' : '';
+
+    htmlContent += `
+      <tr>
+        <td>Year ${y}</td>
+        <td>${fmt(curr_exp)}</td>
+        <td class="${classM2B}">${m2b > 0 ? fmt(m2b) : '-'}</td>
+        <td class="${classB2L}">${b2l > 0 ? fmt(b2l) : '-'}</td>
+        <td>${fmt(liq)}</td>
+        <td>${fmt(baf)}</td>
+        <td>${fmt(multi)}</td>
+        <td>${fmt(emerg)}</td>
+        <td class="${classTotal}" style="font-weight:bold;">${fmt(totalCorpus)}</td>
+      </tr>
+    `;
+
+    // Stop if total corpus goes negative
+    if (totalCorpus <= 0) break; 
+  }
+
+  tbody.innerHTML = htmlContent;
+}
+
+// Initialize on page load
+window.onload = function() {
+  runSimulation();
+
+  // Display large currency inputs using Indian lakh/crore digit grouping.
+  document.querySelectorAll('#in_corpus, #in_exp').forEach(input => {
+    input.addEventListener('input', function() {
+      const digits = this.value.replace(/\D/g, '');
+      if (!digits) {
+        this.value = '';
+        return;
+      }
+
+      const lastThree = digits.slice(-3);
+      const leadingDigits = digits.slice(0, -3);
+      this.value = leadingDigits
+        ? leadingDigits.replace(/\B(?=(\d{2})+(?!\d))/g, ',') + ',' + lastThree
+        : lastThree;
+    });
+  });
+  
+  // Protect number inputs from accidental scroll wheel adjustments
+  document.querySelectorAll('input[type=number]').forEach(input => {
+    input.addEventListener('wheel', e => e.preventDefault());
+  });
+};
+</script>
+
+<footer>
+  <div class="footer-links">
+    <a href="index.html">Home</a>
+    <a href="index.html#calculators">Calculators</a>
+    <a href="blog-template.html">Blog</a>
+    <a href="about.html">About</a>
+  </div>
+  <p>© 2026 RupeeVibe. All calculations are estimates for planning purposes only. Not financial advice.</p>
+</footer>
+
+<script>
+function toggleMenu() {
+  document.querySelector('.nav-links').classList.toggle('mobile-open');
+}
+</script>
+
+</body>
+</html>
