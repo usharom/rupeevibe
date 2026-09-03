@@ -143,7 +143,7 @@ files/
 ├── retirement.html
 ├── sip.html
 ├── homeloan.html
-├── blog-template.html
+├── blog.html
 ├── about.html
 │
 ├── shared.css              ← Common styles for all pages
@@ -193,7 +193,7 @@ files/
     <div class="nav-links">
       <a href="index.html">Home</a>
       <a href="index.html#calculators">Calculators</a>
-      <a href="blog-template.html">Blog</a>
+      <a href="blog.html">Blog</a>
       <a href="about.html">About</a>
     </div>
     <div class="hamburger" onclick="toggleMenu()">
@@ -227,7 +227,7 @@ files/
     <a href="retirement.html">Retirement Calculator</a>
     <a href="sip.html">SIP Calculator</a>
     <a href="homeloan.html">Home Loan EMI</a>
-    <a href="blog-template.html">Blog</a>
+    <a href="blog.html">Blog</a>
     <a href="about.html">About</a>
   </div>
   <p>© 2026 RupeeVibe. All calculations are estimates for planning purposes only. Not financial advice.</p>

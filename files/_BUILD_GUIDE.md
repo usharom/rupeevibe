@@ -19,7 +19,7 @@ Download from: https://nodejs.org/
    - `retirement.html`
    - `sip.html`
    - `homeloan.html`
-   - `blog-template.html`
+   - `blog.html`
    - `about.html`
 
 3. When you update any common section file, simply re-run the build script to sync all pages.
@@ -120,7 +120,7 @@ files/
 ├── retirement.html         (Auto-updated by build.js)
 ├── sip.html                (Auto-updated by build.js)
 ├── homeloan.html           (Auto-updated by build.js)
-├── blog-template.html      (Auto-updated by build.js)
+├── blog.html      (Auto-updated by build.js)
 ├── about.html              (Auto-updated by build.js)
 │
 └── PAGE_TEMPLATE.html      (Template for new pages)

@@ -29,9 +29,10 @@ const pageFiles = [
   'retirement.html',
   'sip.html',
   'homeloan.html',
-  'blog-template.html',
+  'blog.html',
   'about.html',
-  'direct-vs-regular.html'
+  'direct-vs-regular.html',
+  'fire-calculator.html'
 ];
 
 /**

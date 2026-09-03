@@ -172,7 +172,7 @@ files/
 ├── retirement.html         (Retirement calculator)
 ├── sip.html                (SIP calculator)
 ├── homeloan.html           (Home loan calculator)
-├── blog-template.html      (Blog page)
+├── blog.html      (Blog page)
 └── about.html              (About page)
 ```
 

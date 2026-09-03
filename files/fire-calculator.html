@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="msvalidate.01" content="8013B003C2001060A6289D29A84634EC">
+<title>FIRE Calculator — RupeeVibe</title>
+<meta name="description" content="Calculate your FIRE number and estimate when you can become financially independent using India-relevant savings, returns, inflation, and withdrawal assumptions.">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-GENRJHSEDE"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-GENRJHSEDE');
+</script>
+<!-- Replace ca-pub-XXXXXXXXXXXXXXXX with your real AdSense Publisher ID -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="shared.css">
+<link rel="icon" type="image/svg+xml" href="New%20folder/rupeevibe_favicon.svg">
+<style>
+  :root {
+    --primary: var(--saffron);
+  }
+
+  .breadcrumb { font-size: 13px; color: var(--text-light); padding: 14px 0 0; }
+  .breadcrumb a { color: var(--text-muted); text-decoration: none; }
+  .breadcrumb a:hover { color: var(--navy); }
+  .page-hero p { max-width: none; }
+
+  /* Layout Structure */
+  .calc-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    margin-top: 20px;
+  }
+  .calc-form {
+    width: 100%;
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border);
+    box-sizing: border-box;
+  }
+  .calc-results {
+    width: 100%;
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border);
+    box-sizing: border-box;
+  }
+
+  /* Tab System */
+  .tab-container {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 25px;
+    background: var(--navy-light);
+    padding: 6px;
+    border-radius: 10px;
+  }
+  .tab-btn {
+    flex: 1;
+    padding: 12px;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--text-muted);
+    transition: 0.2s;
+  }
+  .tab-btn.active {
+    background: white;
+    color: var(--navy);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  }
+
+  /* Form Elements */
+  .field { margin-bottom: 20px; }
+  .field-row { display: flex; gap: 20px; flex-wrap: wrap; }
+  .field-row > div { flex: 1; min-width: 200px; }
+  
+  label {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+  }
+
+  input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 16px;
+    box-sizing: border-box;
+    font-family: var(--font-body);
+    background: var(--bg);
+  }
+  input:focus { outline: none; border-color: var(--navy); }
+  
+  .section-label {
+    margin: 25px 0 15px 0;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--navy-light);
+    font-weight: bold;
+    color: var(--navy);
+  }
+
+  .calc-btn {
+    width: 100%;
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 16px;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-body);
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    margin-top: 15px;
+  }
+  .calc-btn:hover { opacity: 0.9; }
+
+  /* Results Dashboard */
+  .dashboard-grid {
+    display: grid; 
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); 
+    gap: 15px; 
+    margin-bottom: 30px;
+  }
+  .res-card {
+    background: #f8fafc;
+    border: 1px solid var(--border);
+    padding: 20px;
+    border-radius: var(--radius-sm);
+  }
+  .res-title {
+    font-size: 12px;
+    font-weight: bold;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 5px;
+  }
+  .res-val {
+    font-size: 26px;
+    font-family: var(--font-display);
+    color: var(--navy);
+    font-weight: bold;
+  }
+
+  /* Result Table */
+  .table-wrapper { overflow-x: auto; }
+  .detail-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 15px;}
+  .detail-table th { text-align: right; padding: 12px; background: var(--navy-light); color: var(--navy); border-bottom: 2px solid var(--border); white-space: nowrap; }
+  .detail-table th:first-child { text-align: left; }
+  .detail-table td { text-align: right; padding: 12px; border-bottom: 1px solid var(--border); color: var(--text-muted); white-space: nowrap; }
+  .detail-table td:first-child { text-align: left; font-weight: bold; color: var(--navy); }
+  
+  .success-row { background: #ecfdf5; font-weight: 600; color: #059669; border-left: 4px solid #10b981; }
+
+  /* Details Panel Toggle */
+  details summary {
+    display: list-item; 
+    cursor: pointer;
+    padding: 15px;
+    background: var(--navy-light);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-body);
+    font-size: 15px;
+    color: var(--navy);
+    font-weight: 600;
+    margin-top: 10px;
+    outline: none;
+    border: 1px solid var(--border);
+  }
+
+  .fire-intro { max-width: 920px; }
+  .fire-intro p + p { margin-top: 14px; }
+  .fire-guide {
+    margin-top: 28px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+  }
+  .fire-guide summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0;
+    padding: 22px 28px;
+    border: 0;
+    border-radius: 0;
+    background: var(--card);
+    font-family: var(--font-display);
+    font-size: 24px;
+    color: var(--navy);
+    cursor: pointer;
+    list-style: none;
+  }
+  .fire-guide summary::-webkit-details-marker { display: none; }
+  .fire-guide summary::after {
+    content: "+";
+    color: var(--saffron);
+    font-family: var(--font-body);
+    font-size: 28px;
+    font-weight: 500;
+    line-height: 1;
+  }
+  .fire-guide[open] summary {
+    border-bottom: 1px solid var(--border);
+  }
+  .fire-guide[open] summary::after { content: "−"; }
+  .fire-guide summary:hover { background: var(--saffron-light); }
+  .fire-guide summary:focus-visible {
+    outline: 3px solid rgba(224, 123, 42, 0.3);
+    outline-offset: -3px;
+  }
+  .fire-steps {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px 28px;
+    padding: 24px 28px 28px;
+    list-style: none;
+    counter-reset: fire-step;
+  }
+  .fire-steps li {
+    position: relative;
+    padding-left: 48px;
+    color: var(--text-muted);
+    line-height: 1.7;
+    counter-increment: fire-step;
+  }
+  .fire-steps li::before {
+    content: counter(fire-step);
+    position: absolute;
+    top: 1px;
+    left: 0;
+    width: 34px;
+    height: 34px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--saffron-light);
+    color: #b45309;
+    font-weight: 700;
+  }
+  .fire-steps strong {
+    display: block;
+    margin-bottom: 3px;
+    color: var(--navy);
+  }
+  .mode-name {
+    color: var(--navy);
+    font-weight: 700;
+  }
+  @media (max-width: 700px) {
+    .fire-guide summary { padding: 19px 18px; font-size: 21px; }
+    .fire-steps { padding: 22px 18px; }
+    .fire-steps { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── Navigation ── -->
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="logo"><img src="New%20folder/rupeevibe_favicon.svg" alt="" class="logo-mark"><span class="logo-text">Rupee<span class="logo-dot">Vibe</span></span></a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="index.html#calculators" class="active">Calculators</a>
+      <a href="blog.html">Blog</a>
+      <a href="about.html">About</a>
+    </div>
+    <div class="hamburger" onclick="toggleMenu()">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  </div>
+</nav>
+
+<div class="page">
+  <div class="breadcrumb"><a href="index.html">Home</a> › <a href="index.html#calculators">Calculators</a> › FIRE Calculator</div>
+
+  <div class="page-hero">
+    <h1>🔥 FIRE Calculator</h1>
+    <div class="fire-intro">
+      <p><strong>Financial Independence, Retire Early (FIRE)</strong> is the milestone where your invested money generates enough returns to cover your daily living expenses forever. Once you hit this “Crossover Point,” working for a salary becomes completely optional.</p>
+      <p>In India, planning for early retirement requires carefully balancing high inflation against your investment growth. This calculator runs a year-by-year simulation to find your exact FIRE number—the total corpus you need to safely quit the rat race.</p>
+    </div>
+  </div>
+
+  <details class="fire-guide">
+    <summary>How to use this tool</summary>
+    <ol class="fire-steps">
+      <li>
+        <strong>Choose your mode</strong>
+        Click <span class="mode-name">Find My FIRE Year</span>&nbsp;if you want the calculator to figure out exactly when you can quit working based on your current savings rate. Click <span class="mode-name">Check a Target Year</span>&nbsp;if you have a specific deadline in mind (like 2035) and want to see if you will successfully hit your target by then.
+      </li>
+      <li>
+        <strong>Enter your baseline numbers</strong>
+        Input your current monthly living expenses, how much money you actively save and invest each month, and your total invested corpus today.
+      </li>
+      <li>
+        <strong>Set your market expectations</strong>
+        Define your expected portfolio return (e.g., 10–12% for equity-heavy portfolios) and a realistic long-term inflation rate (typically 6–7% in India).
+      </li>
+      <li>
+        <strong>Set your Safe Withdrawal Rate (SWR)</strong>
+        This is the percentage of your total corpus you plan to withdraw each year to live on. A standard conservative estimate in India is between 3% and 4%.
+      </li>
+    </ol>
+  </details>
+
+  <div class="calc-layout">
+    <!-- CONTROLS SECTION -->
+    <div class="calc-form">
+      
+      <div class="tab-container">
+        <button class="tab-btn active" id="tab-find" onclick="setMode('find_year')">Find My FIRE Year</button>
+        <button class="tab-btn" id="tab-target" onclick="setMode('target_year')">Check a Target Year</button>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>Current Monthly Expenses (₹)</label>
+          <input type="number" id="in_exp" value="60000">
+        </div>
+        <div class="field">
+          <label>Monthly Savings (₹)</label>
+          <input type="number" id="in_msav" value="40000">
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>Current Corpus / Savings (₹)</label>
+          <input type="number" id="in_corpus" value="1500000">
+        </div>
+        <!-- This field only shows in Target Year Mode -->
+        <div class="field" id="targetYearBox" style="display: none;">
+          <label>Target Retirement Year</label>
+          <input type="number" id="in_target_year" value="2035">
+        </div>
+      </div>
+
+      <div class="section-label">Market Assumptions</div>
+      <div class="field-row">
+        <div class="field">
+          <label>Expected Return (%)</label>
+          <input type="number" id="in_rate" value="11">
+        </div>
+        <div class="field">
+          <label>Inflation Rate (%)</label>
+          <input type="number" id="in_inf" value="6">
+        </div>
+        <div class="field">
+          <label>Safe Withdrawal Rate (%)</label>
+          <input type="number" id="in_swr" value="4">
+        </div>
+      </div>
+
+      <button type="button" class="calc-btn" id="calc-btn" onclick="calculateFIRE()">Find My FIRE Year &darr;</button>
+    </div>
+
+    <!-- RESULTS SECTION -->
+    <div class="calc-results" id="results-section">
+      
+      <div class="dashboard-grid">
+        <div class="res-card">
+          <div class="res-title">Status</div>
+          <div class="res-val" id="res-status" style="color: var(--text-muted);">Ready</div>
+        </div>
+        <div class="res-card">
+          <div class="res-title" id="fire-num-label">Your Target FIRE Number</div>
+          <div class="res-val" style="color: var(--primary);" id="res-fire-num">₹0</div>
+        </div>
+        <div class="res-card">
+          <div class="res-title">Projected Corpus</div>
+          <div class="res-val" id="res-corpus">₹0</div>
+        </div>
+      </div>
+
+      <details id="detailsPanel">
+        <summary>View Year-by-Year Breakdown ▾</summary>
+        <div class="table-wrapper">
+          <table class="detail-table">
+            <thead>
+              <tr>
+                <th>Timeline</th>
+                <th>Inflated Annual Expense</th>
+                <th>Required FIRE Number</th>
+                <th>Your Corpus Value</th>
+              </tr>
+            </thead>
+            <tbody id="result-body">
+              <!-- Data populated via JS -->
+              <tr><td colspan="4" style="text-align: center; padding: 20px;">Click calculate to run the simulation.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </details>
+    </div>
+  </div>
+</div>
+
+<!-- ── Footer ── -->
+<footer>
+  <div class="footer-links">
+    <a href="index.html">Home</a>
+    <a href="index.html#calculators">Calculators</a>
+    <a href="blog.html">Blog</a>
+    <a href="about.html">About</a>
+  </div>
+  <p>© 2026 RupeeVibe. All calculations are estimates for planning purposes only. Not financial advice.</p>
+</footer>
+
+<script>
+function toggleMenu() {
+  document.querySelector('.nav-links').classList.toggle('mobile-open');
+}
+
+// Exact comma-separated formatter
+function fmt(n) {
+  if (n === 0) return '₹0';
+  return '₹' + Math.round(n).toLocaleString('en-IN');
+}
+
+let mode = 'find_year';
+const currentYear = new Date().getFullYear();
+
+function setMode(newMode) {
+  mode = newMode;
+  document.getElementById('tab-find').classList.toggle('active', mode === 'find_year');
+  document.getElementById('tab-target').classList.toggle('active', mode === 'target_year');
+  
+  const targetBox = document.getElementById('targetYearBox');
+  const calcBtn = document.getElementById('calc-btn');
+  const fireLabel = document.getElementById('fire-num-label');
+
+  if (mode === 'target_year') {
+    targetBox.style.display = 'block';
+    calcBtn.innerHTML = "Check Target Year &darr;";
+    fireLabel.textContent = "FIRE Number Needed By Target";
+  } else {
+    targetBox.style.display = 'none';
+    calcBtn.innerHTML = "Find My FIRE Year &darr;";
+    fireLabel.textContent = "Your Target FIRE Number";
+  }
+}
+
+function calculateFIRE() {
+  const tbody = document.getElementById('result-body');
+  tbody.innerHTML = '';
+
+  // Get Inputs
+  let exp = parseFloat(document.getElementById('in_exp').value) || 0;
+  let msav = parseFloat(document.getElementById('in_msav').value) || 0;
+  let corpus = parseFloat(document.getElementById('in_corpus').value) || 0;
+  
+  let rate = parseFloat(document.getElementById('in_rate').value) / 100 || 0;
+  let inf = parseFloat(document.getElementById('in_inf').value) / 100 || 0;
+  let swr = parseFloat(document.getElementById('in_swr').value) / 100 || 0.04;
+
+  let annualExp = exp * 12;
+  let logContent = "";
+  
+  let success = false;
+  let fireYear = null;
+  let targetFireNum = 0;
+  
+  // Tab 1: Check Specific Year Mode
+  if (mode === 'target_year') {
+    let targetY = parseInt(document.getElementById('in_target_year').value);
+    
+    if (targetY <= currentYear) {
+      alert("Target year must be in the future.");
+      return;
+    }
+    
+    let yearsToRun = targetY - currentYear;
+    
+    for (let i = 1; i <= yearsToRun; i++) {
+      let displayYear = currentYear + i;
+      
+      // Inflate expenses and calculate target
+      annualExp *= (1 + inf);
+      let yearTarget = annualExp / swr;
+      
+      // Grow corpus (assuming monthly contributions)
+      let growth = corpus * rate;
+      corpus += growth + (msav * 12);
+      
+      // Record final year target
+      if (i === yearsToRun) { targetFireNum = yearTarget; }
+      
+      let rowClass = (corpus >= yearTarget && i === yearsToRun) ? "success-row" : "";
+      
+      logContent += `
+        <tr class="${rowClass}">
+          <td>${displayYear}</td>
+          <td>${fmt(annualExp)}</td>
+          <td>${fmt(yearTarget)}</td>
+          <td style="font-weight:bold;">${fmt(corpus)}</td>
+        </tr>`;
+    }
+    
+    fireYear = targetY;
+    success = (corpus >= targetFireNum);
+
+  // Tab 2: Find My Year Mode
+  } else {
+    let maxIter = 60; // Max years to prevent infinite loop
+    
+    for (let i = 1; i <= maxIter; i++) {
+      let displayYear = currentYear + i;
+      
+      annualExp *= (1 + inf);
+      let yearTarget = annualExp / swr;
+      
+      let growth = corpus * rate;
+      corpus += growth + (msav * 12);
+      
+      let rowClass = "";
+      if (corpus >= yearTarget) {
+        success = true;
+        fireYear = displayYear;
+        targetFireNum = yearTarget;
+        rowClass = "success-row";
+      }
+
+      logContent += `
+        <tr class="${rowClass}">
+          <td>${displayYear}</td>
+          <td>${fmt(annualExp)}</td>
+          <td>${fmt(yearTarget)}</td>
+          <td style="font-weight:bold;">${fmt(corpus)}</td>
+        </tr>`;
+        
+      if (success) break; // Stop loop once FIRE is achieved
+    }
+    
+    // If they never hit it in 60 years
+    if (!success) {
+      fireYear = currentYear + maxIter;
+      targetFireNum = annualExp / swr;
+    }
+  }
+
+  tbody.innerHTML = logContent;
+  
+  // Update Dashboard
+  document.getElementById('res-fire-num').textContent = fmt(targetFireNum);
+  document.getElementById('res-corpus').textContent = fmt(corpus);
+  document.getElementById('detailsPanel').open = true;
+
+  let statusEl = document.getElementById('res-status');
+  if (mode === 'target_year') {
+    if (success) {
+      statusEl.innerHTML = `Achievable by ${fireYear}! 🎉`;
+      statusEl.style.color = "#059669";
+    } else {
+      statusEl.innerHTML = `Shortfall in ${fireYear}`;
+      statusEl.style.color = "#dc2626";
+    }
+  } else {
+    if (success) {
+      statusEl.innerHTML = `FIRE Achieved in ${fireYear} 🎉`;
+      statusEl.style.color = "#059669";
+    } else {
+      statusEl.innerHTML = `Not reachable in 60 yrs.`;
+      statusEl.style.color = "#dc2626";
+    }
+  }
+}
+
+window.onload = function() {
+  // Lock scroll wheel on numbers
+  document.querySelectorAll('input[type=number]').forEach(input => {
+    input.addEventListener('wheel', e => e.preventDefault());
+  });
+};
+</script>
+
+</body>
+</html>

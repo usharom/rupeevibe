@@ -111,6 +111,7 @@
     margin-bottom: 12px;
   }
   .section-sub { color: var(--text-muted); font-size: 16px; max-width: 540px; line-height: 1.7; margin-bottom: 40px; }
+  #calculators .section-sub { max-width: none; }
 
   /* ── Calculator tiles ── */
   .calc-grid {
@@ -146,6 +147,7 @@
   .tile-sip::after { background: linear-gradient(90deg, var(--navy), #3a7bd5); }
   .tile-home::after { background: linear-gradient(90deg, var(--saffron), #f5a623); }
   .tile-debt::after { background: linear-gradient(90deg, #7c3aed, #a855f7); }
+  .tile-fire::after { background: linear-gradient(90deg, var(--saffron), #ef4444); }
 
   .tile-icon {
     width: 52px; height: 52px;
@@ -155,6 +157,7 @@
   }
   .tile-icon-green { background: var(--green-light); }
   .tile-icon-blue { background: var(--navy-light); }
+  .tile-icon-orange { background: var(--saffron-light); }
   .tile-icon-purple { background: linear-gradient(135deg, #e9d5ff, #f3e8ff); color: #7c3aed; }
 
   .tile-tag {
@@ -170,6 +173,7 @@
   }
   .tag-green { background: var(--green-light); color: var(--green); }
   .tag-blue { background: var(--navy-light); color: var(--navy); }
+  .tag-orange { background: var(--saffron-light); color: #b45309; }
   .tag-purple { background: linear-gradient(135deg, #e9d5ff, #f3e8ff); color: #7c3aed; }
 
   .tile-title {
@@ -236,7 +240,7 @@
     <div class="nav-links">
       <a href="index.html" class="active">Home</a>
       <a href="#calculators">Calculators</a>
-      <a href="blog-template.html">Blog</a>
+      <a href="blog.html">Blog</a>
       <a href="about.html">About</a>
     </div>
     <div class="hamburger" onclick="toggleMenu()">
@@ -261,7 +265,7 @@
 <!-- ── Stats bar ── -->
 <div class="stats-bar">
   <div class="stats-inner">
-    <div class="stat"><div class="stat-num">6</div><div class="stat-label">Free Calculators</div></div>
+    <div class="stat"><div class="stat-num">7</div><div class="stat-label">Free Calculators</div></div>
     <div class="stat"><div class="stat-num">₹</div><div class="stat-label">Rupee-First Design</div></div>
     <div class="stat"><div class="stat-num">0</div><div class="stat-label">Sign-ups Required</div></div>
     <div class="stat"><div class="stat-num">100%</div><div class="stat-label">Free Forever</div></div>
@@ -298,6 +302,15 @@
         <div class="tile-title">Retirement Planning Calculator</div>
         <p class="tile-desc">Find out exactly how much you need to save today to maintain your lifestyle after retirement. Accounts for inflation, existing savings, and a custom post-retirement horizon.</p>
         <div class="tile-cta">Plan your retirement <span class="tile-arrow">→</span></div>
+      </a>
+
+      <!-- FIRE -->
+      <a href="fire-calculator.html" class="calc-tile tile-fire">
+        <div class="tile-icon tile-icon-orange">🔥</div>
+        <span class="tile-tag tag-orange">Financial Independence</span>
+        <div class="tile-title">FIRE Calculator</div>
+        <p class="tile-desc">Calculate your FIRE number, estimate the year you can become financially independent, or check whether a target retirement year is achievable.</p>
+        <div class="tile-cta">Find your FIRE year <span class="tile-arrow">→</span></div>
       </a>
 
       <!-- Retirement Laddering -->
@@ -398,7 +411,7 @@
   <div class="footer-links">
     <a href="index.html">Home</a>
     <a href="index.html#calculators">Calculators</a>
-    <a href="blog-template.html">Blog</a>
+    <a href="blog.html">Blog</a>
     <a href="about.html">About</a>
   </div>
   <p>© 2026 RupeeVibe. All calculations are estimates for planning purposes only. Not financial advice.</p>
