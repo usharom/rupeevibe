@@ -18,6 +18,7 @@
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="shared.css">
 <link rel="icon" type="image/svg+xml" href="New%20folder/rupeevibe_favicon.svg">
+<script src="indian-currency.js"></script>
 <style>
   :root {
     --primary: var(--saffron);
@@ -340,18 +341,18 @@
       <div class="field-row">
         <div class="field">
           <label>Current Monthly Expenses (₹)</label>
-          <input type="number" id="in_exp" value="60000">
+          <input type="text" inputmode="numeric" data-indian-currency id="in_exp" value="60,000">
         </div>
         <div class="field">
           <label>Monthly Savings (₹)</label>
-          <input type="number" id="in_msav" value="40000">
+          <input type="text" inputmode="numeric" data-indian-currency id="in_msav" value="40,000">
         </div>
       </div>
 
       <div class="field-row">
         <div class="field">
           <label>Current Corpus / Savings (₹)</label>
-          <input type="number" id="in_corpus" value="1500000">
+          <input type="text" inputmode="numeric" data-indian-currency id="in_corpus" value="15,00,000">
         </div>
         <!-- This field only shows in Target Year Mode -->
         <div class="field" id="targetYearBox" style="display: none;">
@@ -481,9 +482,9 @@ function calculateFIRE() {
   tbody.innerHTML = '';
 
   // Get Inputs
-  let exp = parseFloat(document.getElementById('in_exp').value) || 0;
-  let msav = parseFloat(document.getElementById('in_msav').value) || 0;
-  let corpus = parseFloat(document.getElementById('in_corpus').value) || 0;
+  let exp = parseIndianNumber(document.getElementById('in_exp').value);
+  let msav = parseIndianNumber(document.getElementById('in_msav').value);
+  let corpus = parseIndianNumber(document.getElementById('in_corpus').value);
   
   let rate = parseFloat(document.getElementById('in_rate').value) / 100 || 0;
   let inf = parseFloat(document.getElementById('in_inf').value) / 100 || 0;

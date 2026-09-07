@@ -6,6 +6,7 @@
 <title>Retirement Calculator — RupeeVibe</title>
 <link rel="stylesheet" href="shared.css">
 <link rel="icon" type="image/svg+xml" href="New%20folder/rupeevibe_favicon.svg">
+<script src="indian-currency.js"></script>
 <!-- Replace ca-pub-XXXXXXXXXXXXXXXX with your real AdSense Publisher ID -->
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
 <!-- Google tag (gtag.js) -->
@@ -167,7 +168,7 @@
       <div class="calc-form">
         <div class="field">
           <label>Current Monthly Expenses (₹)</label>
-          <input type="number" id="monthlyExp" value="50000">
+          <input type="text" inputmode="numeric" data-indian-currency id="monthlyExp" value="50,000">
         </div>
         <div class="field-row">
           <div class="field">
@@ -181,18 +182,18 @@
         </div>
         <div class="field">
           <label>Current Savings (₹)</label>
-          <input type="number" id="currentSavings" value="500000">
+          <input type="text" inputmode="numeric" data-indian-currency id="currentSavings" value="5,00,000">
         </div>
         <div class="field">
           <label>Monthly Savings (₹)</label>
-          <input type="number" id="monthlySavings" value="15000">
+          <input type="text" inputmode="numeric" data-indian-currency id="monthlySavings" value="15,000">
         </div>
         <div id="expenses-wrapper" style="background: #f8fafc; border: 1px solid var(--border); padding: 20px; border-radius: var(--radius-sm); margin-bottom: 20px;">
           <label style="color: var(--navy); margin-bottom: 12px; font-size: 14px; font-weight: 700;">Major Goals / Big Expenses (Max 10)</label>
           <div id="expenses-container">
             <div class="expense-row">
               <input type="text" class="exp-name" placeholder="Goal (e.g., House)">
-              <input type="number" class="exp-amount" placeholder="Amount (₹)">
+              <input type="text" inputmode="numeric" data-indian-currency class="exp-amount" placeholder="Amount (₹)">
               <input type="number" class="exp-year" placeholder="Years from now (e.g., 5)">
               <button type="button" class="remove-btn" onclick="removeExpense(this)" disabled>×</button>
             </div>
@@ -259,7 +260,7 @@ function addExpense() {
   row.className = 'expense-row';
   row.innerHTML = `
     <input type="text" class="exp-name" placeholder="Goal (e.g., House)">
-    <input type="number" class="exp-amount" placeholder="Amount (₹)">
+    <input type="text" inputmode="numeric" data-indian-currency class="exp-amount" placeholder="Amount (₹)">
     <input type="number" class="exp-year" placeholder="Years from now (e.g., 5)">
     <button type="button" class="remove-btn" onclick="removeExpense(this)">×</button>
   `;
@@ -294,7 +295,7 @@ function resetAll() {
   container.innerHTML = `
     <div class="expense-row">
       <input type="text" class="exp-name" placeholder="Goal (e.g., House)">
-      <input type="number" class="exp-amount" placeholder="Amount (₹)">
+      <input type="text" inputmode="numeric" data-indian-currency class="exp-amount" placeholder="Amount (₹)">
       <input type="number" class="exp-year" placeholder="Years from now">
       <button type="button" class="remove-btn" onclick="removeExpense(this)" disabled>×</button>
     </div>`;
@@ -309,11 +310,11 @@ function resetAll() {
 
 function calculate() {
   const data = {
-    expense: parseFloat(document.getElementById("monthlyExp").value) || 0,
+    expense: parseIndianNumber(document.getElementById("monthlyExp").value),
     yToR: parseInt(document.getElementById("yearsToRetire").value) || 0,
     yRet: parseInt(document.getElementById("yearsRetired").value) || 30,
-    sav: parseFloat(document.getElementById("currentSavings").value) || 0,
-    mSav: parseFloat(document.getElementById("monthlySavings").value) || 0,
+    sav: parseIndianNumber(document.getElementById("currentSavings").value),
+    mSav: parseIndianNumber(document.getElementById("monthlySavings").value),
     rate: parseFloat(document.getElementById("returnRate").value) || 8,
     inf: parseFloat(document.getElementById("inflationRate").value) || 6
   };
@@ -323,7 +324,7 @@ function calculate() {
   let goals = [];
   document.querySelectorAll('.expense-row').forEach(row => {
     let name = row.querySelector('.exp-name').value || "Unnamed Goal";
-    let amt = parseFloat(row.querySelector('.exp-amount').value) || 0;
+    let amt = parseIndianNumber(row.querySelector('.exp-amount').value);
     let yr = parseInt(row.querySelector('.exp-year').value) || 0;
     
     if (amt > 0 && yr > 0) {

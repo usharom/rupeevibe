@@ -6,6 +6,7 @@
 <title>Direct Vs. Regular Mutual Fund Switch Calculator — RupeeVibe</title>
 <link rel="stylesheet" href="shared.css">
 <link rel="icon" type="image/svg+xml" href="New%20folder/rupeevibe_favicon.svg">
+<script src="indian-currency.js"></script>
 <!-- Replace ca-pub-XXXXXXXXXXXXXXXX with your real AdSense Publisher ID -->
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
 <!-- Google tag (gtag.js) -->
@@ -81,11 +82,11 @@
         <div class="field-row">
           <div class="field">
             <label>Invested Amount (₹)</label>
-            <input type="number" id="investedAmt" value="500000">
+            <input type="text" inputmode="numeric" data-indian-currency id="investedAmt" value="5,00,000">
           </div>
           <div class="field">
             <label>Current Value (₹)</label>
-            <input type="number" id="currentValue" value="800000">
+            <input type="text" inputmode="numeric" data-indian-currency id="currentValue" value="8,00,000">
           </div>
         </div>
         <div class="field-row">
@@ -175,8 +176,8 @@ function fmt(n) {
 }
 
 function calculateSwitch() {
-  const invested = parseFloat(document.getElementById("investedAmt").value) || 0;
-  const current = parseFloat(document.getElementById("currentValue").value) || 0;
+  const invested = parseIndianNumber(document.getElementById("investedAmt").value);
+  const current = parseIndianNumber(document.getElementById("currentValue").value);
   const regER = parseFloat(document.getElementById("regER").value) || 0;
   const dirER = parseFloat(document.getElementById("dirER").value) || 0;
   const mktReturn = parseFloat(document.getElementById("marketReturn").value) || 0;

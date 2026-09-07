@@ -18,6 +18,7 @@
 </script>
 <link rel="stylesheet" href="shared.css">
 <link rel="icon" type="image/svg+xml" href="New%20folder/rupeevibe_favicon.svg">
+<script src="indian-currency.js"></script>
 <style>
   .breadcrumb { font-size: 13px; color: var(--text-light); padding: 14px 0 0; }
   .breadcrumb a { color: var(--text-muted); text-decoration: none; }
@@ -96,7 +97,7 @@
       <div class="calc-form">
         <div class="field">
           <label>Loan Amount (₹)</label>
-          <input type="number" id="loanAmount" value="5000000" min="0" oninput="calculate()">
+          <input type="text" inputmode="numeric" data-indian-currency id="loanAmount" value="50,00,000" oninput="calculate()">
           <div class="field-hint">Principal amount you wish to borrow</div>
         </div>
         <div class="field-row">
@@ -112,7 +113,7 @@
         </div>
         <div class="field">
           <label>Annual Prepayment (₹) <span style="font-weight:400;color:var(--text-light)">(optional)</span></label>
-          <input type="number" id="prepayment" value="0" min="0" oninput="calculate()">
+          <input type="text" inputmode="numeric" data-indian-currency id="prepayment" value="0" oninput="calculate()">
           <div class="field-hint">Extra payment made every year to reduce principal</div>
         </div>
         <button class="calc-btn" onclick="calculate()">Calculate EMI →</button>
@@ -267,10 +268,10 @@ function buildAmort(P, annualRate, years, annualPrepay) {
 }
 
 function calculate() {
-  const P = parseFloat(document.getElementById('loanAmount').value) || 0;
+  const P = parseIndianNumber(document.getElementById('loanAmount').value);
   const rate = parseFloat(document.getElementById('interestRate').value) || 8.5;
   const tenure = parseFloat(document.getElementById('tenure').value) || 20;
-  const prepay = parseFloat(document.getElementById('prepayment').value) || 0;
+  const prepay = parseIndianNumber(document.getElementById('prepayment').value);
 
   const emi = calcEMI(P, rate, tenure);
   const baseInterest = emi * tenure * 12 - P;

@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>50:50 Rebalancing Calculator — RupeeVibe</title>
+<meta name="description" content="Calculate a sustainable withdrawal using a 50:50 equity and debt portfolio with automatic threshold-based rebalancing.">
+<link rel="icon" type="image/svg+xml" href="New%20folder/rupeevibe_favicon.svg">
+<script src="indian-currency.js"></script>
+<!-- Google Analytics 4 -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-GENRJHSEDE"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-GENRJHSEDE');
+</script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+  /* --- RUPEEVIBE BASE STYLES --- */
+  :root {
+    --navy: #0f2744;
+    --navy-light: #e8f0f8;
+    --border: #e5e9f0;
+    --text-muted: #4b5563;
+    --text-light: #9ca3af;
+    --bg: #f5f7fa;
+    --radius-sm: 8px;
+    --font-body: 'Plus Jakarta Sans', sans-serif;
+    --font-display: 'Fraunces', Georgia, serif;
+    --primary: #e07b2a;
+    --saffron: #e07b2a;
+  }
+
+  body {
+    font-family: var(--font-body);
+    background: var(--bg);
+    color: var(--navy);
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+  }
+
+  /* Shared RupeeVibe navigation and footer */
+  nav { background: var(--navy); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid rgba(255,255,255,0.07); }
+  .nav-inner { max-width: 1100px; margin: 0 auto; padding: 0 24px; height: 62px; display: flex; align-items: center; justify-content: space-between; }
+  .logo { font-family: var(--font-display); font-size: 22px; color: #fff; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; }
+  .logo-text { display: inline-flex; }
+  .logo-mark { width: 32px; height: 32px; object-fit: contain; flex-shrink: 0; }
+  .logo-dot { color: var(--saffron); }
+  .nav-links { display: flex; gap: 6px; }
+  .nav-links a { color: rgba(255,255,255,0.72); text-decoration: none; font-size: 14px; font-weight: 500; padding: 6px 14px; border-radius: var(--radius-sm); transition: background 0.18s, color 0.18s; }
+  .nav-links a:hover, .nav-links a.active { background: rgba(255,255,255,0.10); color: #fff; }
+  .hamburger { display: none; flex-direction: column; cursor: pointer; padding: 6px; border-radius: var(--radius-sm); }
+  .hamburger span { width: 20px; height: 2px; background: #fff; margin: 3px 0; }
+  footer { background: var(--navy); color: rgba(255,255,255,0.55); text-align: center; padding: 28px 24px; font-size: 13px; margin-top: 60px; }
+  footer a { color: rgba(255,255,255,0.72); text-decoration: none; }
+  footer a:hover { color: #fff; }
+  footer .footer-links { display: flex; justify-content: center; gap: 20px; margin-bottom: 12px; flex-wrap: wrap; }
+  footer p { margin: 0; }
+  .footer-social { display: flex; justify-content: center; margin-bottom: 12px; }
+  .social-link { display: inline-flex; align-items: center; gap: 7px; padding: 6px 10px; border-radius: var(--radius-sm); font-weight: 500; }
+  .social-icon { width: 20px; height: 20px; color: #ff4500; }
+
+  @media (max-width: 760px) {
+    .nav-links a { padding: 6px 10px; font-size: 13px; }
+    .hamburger { display: flex; }
+    .nav-links { position: absolute; top: 62px; left: 0; right: 0; background: var(--navy); flex-direction: column; padding: 20px 24px; display: none; border-top: 1px solid rgba(255,255,255,0.07); }
+    .nav-links.mobile-open { display: flex; }
+  }
+
+  .page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px 20px 60px 20px;
+  }
+
+  .breadcrumb { font-size: 13px; color: var(--text-light); padding: 14px 0 0; margin-bottom: 20px; }
+  .breadcrumb a { color: var(--text-muted); text-decoration: none; }
+  .breadcrumb a:hover { color: var(--navy); }
+
+  .page-hero h1 {
+    font-family: var(--font-display);
+    font-size: 32px;
+    margin-bottom: 10px;
+  }
+
+  .page-hero p {
+    color: var(--text-muted);
+    font-size: 15px;
+    margin-top: 0;
+    width: 100%;
+    max-width: none;
+    line-height: 1.5;
+  }
+
+  /* Layout Structure */
+  .calc-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    margin-top: 20px;
+  }
+  .calc-form {
+    width: 100%;
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border);
+    box-sizing: border-box;
+  }
+  .calc-results {
+    width: 100%;
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border);
+    box-sizing: border-box;
+  }
+
+  /* Tab System */
+  .tab-container {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 25px;
+    background: var(--navy-light);
+    padding: 6px;
+    border-radius: 10px;
+  }
+  .tab-btn {
+    flex: 1;
+    padding: 12px;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--text-muted);
+    transition: 0.2s;
+  }
+  .tab-btn.active {
+    background: white;
+    color: var(--navy);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  }
+
+  /* Form Elements */
+  .field { margin-bottom: 20px; }
+  .field-row { display: flex; gap: 20px; flex-wrap: wrap; }
+  .field-row > div { flex: 1; min-width: 200px; }
+  
+  label {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+  }
+
+  input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 16px;
+    box-sizing: border-box;
+    font-family: var(--font-body);
+    background: var(--bg);
+  }
+  input:focus { outline: none; border-color: var(--navy); }
+  
+  .section-label {
+    margin: 25px 0 15px 0;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--navy-light);
+    font-weight: bold;
+    color: var(--navy);
+  }
+
+  .calc-btn {
+    width: 100%;
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 16px;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-body);
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    margin-top: 15px;
+  }
+  .calc-btn:hover { opacity: 0.9; }
+
+  /* Results Dashboard */
+  .dashboard-grid {
+    display: grid; 
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); 
+    gap: 15px; 
+    margin-bottom: 30px;
+  }
+  .res-card {
+    background: #f8fafc;
+    border: 1px solid var(--border);
+    padding: 20px;
+    border-radius: var(--radius-sm);
+  }
+  .res-title {
+    font-size: 12px;
+    font-weight: bold;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 5px;
+  }
+  .res-val {
+    font-size: 26px;
+    font-family: var(--font-display);
+    color: var(--navy);
+    font-weight: bold;
+  }
+
+  /* Result Table */
+  .table-wrapper { overflow-x: auto; }
+  .detail-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 15px;}
+  .detail-table th { text-align: right; padding: 12px; background: var(--navy-light); color: var(--navy); border-bottom: 2px solid var(--border); white-space: nowrap; }
+  .detail-table th:first-child { text-align: left; }
+  .detail-table td { text-align: right; padding: 12px; border-bottom: 1px solid var(--border); color: var(--text-muted); white-space: nowrap; }
+  .detail-table td:first-child { text-align: left; font-weight: bold; color: var(--navy); }
+  
+  .rebalance-col { color: #059669 !important; font-weight: 600; background: #ecfdf5; }
+  .danger-text { color: #dc2626 !important; font-weight: bold; }
+
+  /* Details Panel Toggle */
+  details summary {
+    display: list-item; 
+    cursor: pointer;
+    padding: 15px;
+    background: var(--navy-light);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-body);
+    font-size: 15px;
+    color: var(--navy);
+    font-weight: 600;
+    margin-top: 10px;
+    outline: none;
+    border: 1px solid var(--border);
+  }
+
+  /* Matches the instructional card used by the FIRE calculator. */
+  .tool-guide {
+    margin-top: 28px;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    box-shadow: 0 1px 4px rgba(15,39,68,0.07);
+    overflow: hidden;
+  }
+  .tool-guide summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0;
+    padding: 22px 28px;
+    border: 0;
+    border-radius: 0;
+    background: white;
+    font-family: var(--font-display);
+    font-size: 24px;
+    color: var(--navy);
+    cursor: pointer;
+    list-style: none;
+  }
+  .tool-guide summary::-webkit-details-marker { display: none; }
+  .tool-guide summary::after {
+    content: "+";
+    color: var(--saffron);
+    font-family: var(--font-body);
+    font-size: 28px;
+    font-weight: 500;
+    line-height: 1;
+  }
+  .tool-guide[open] summary { border-bottom: 1px solid var(--border); }
+  .tool-guide[open] summary::after { content: "−"; }
+  .tool-guide summary:hover { background: #fdf0e3; }
+  .tool-guide summary:focus-visible {
+    outline: 3px solid rgba(224,123,42,0.3);
+    outline-offset: -3px;
+  }
+  .tool-steps {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px 28px;
+    padding: 24px 28px 28px;
+    margin: 0;
+    list-style: none;
+    counter-reset: tool-step;
+  }
+  .tool-steps li {
+    position: relative;
+    padding-left: 48px;
+    color: var(--text-muted);
+    line-height: 1.7;
+    counter-increment: tool-step;
+  }
+  .tool-steps li::before {
+    content: counter(tool-step);
+    position: absolute;
+    top: 1px;
+    left: 0;
+    width: 34px;
+    height: 34px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: #fdf0e3;
+    color: #b45309;
+    font-weight: 700;
+  }
+  .tool-steps strong { display: block; margin-bottom: 3px; color: var(--navy); }
+  .mode-name { color: var(--navy); font-weight: 700; }
+
+  @media (max-width: 700px) {
+    .tool-guide summary { padding: 19px 18px; font-size: 21px; }
+    .tool-steps { padding: 22px 18px; grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="logo"><img src="New%20folder/rupeevibe_favicon.svg" alt="" class="logo-mark"><span class="logo-text">Rupee<span class="logo-dot">Vibe</span></span></a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="index.html#calculators" class="active">Calculators</a>
+      <a href="blog.html">Blog</a>
+      <a href="about.html">About</a>
+    </div>
+    <div class="hamburger" onclick="toggleMenu()" aria-label="Toggle navigation" role="button" tabindex="0">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</nav>
+
+<div class="page">
+  <div class="breadcrumb"><a href="index.html">Home</a> › <a href="index.html#calculators">Calculators</a> › 50:50 Rebalancing</div>
+
+<div class="page-hero">
+    <h1>⚖️ 50:50 Portfolio Rebalancing Tool</h1>
+    <p style="margin-bottom: 8px;"><strong>Protect your retirement corpus with disciplined rebalancing.</strong> A 50:50 strategy perfectly balances the high-growth engine of Equity with the steady, reliable anchor of Debt. But the real magic happens when the market rallies.</p>
+  </div>
+
+  <details class="tool-guide">
+    <summary>How to use this tool</summary>
+    <ol class="tool-steps">
+      <li>
+        <strong>Choose your mode</strong>
+        Select <span class="mode-name">Find Safe Withdrawal</span> to calculate a sustainable monthly amount, or <span class="mode-name">Find Years to Depletion</span> to test how long a chosen withdrawal may last.
+      </li>
+      <li>
+        <strong>Enter your portfolio details</strong>
+        Add your total starting corpus and either your target retirement duration or current monthly withdrawal, depending on the selected mode.
+      </li>
+      <li>
+        <strong>Set your market assumptions</strong>
+        Enter expected equity and debt returns along with inflation. Withdrawals automatically increase each year to preserve purchasing power.
+      </li>
+      <li>
+        <strong>Review automatic rebalancing</strong>
+        The portfolio starts at 50% equity and 50% debt. When equity exceeds 60%, gains are swept into debt and the portfolio returns to a 50:50 allocation.
+      </li>
+    </ol>
+  </details>
+
+  <div class="calc-layout">
+    <!-- CONTROLS SECTION -->
+    <div class="calc-form">
+      
+      <div class="tab-container">
+        <button class="tab-btn active" id="tab-find-amount" onclick="setMode('find_amount')">Find Safe Withdrawal</button>
+        <button class="tab-btn" id="tab-find-years" onclick="setMode('find_years')">Find Years to Depletion</button>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>Total Starting Corpus (₹)</label>
+          <input type="text" inputmode="numeric" data-indian-currency id="in_corpus" value="2,00,00,000">
+        </div>
+        
+        <!-- Mode 1 Input -->
+        <div class="field" id="box_target_years">
+          <label>Target Years to Last</label>
+          <input type="number" id="in_target_years" value="30">
+        </div>
+
+        <!-- Mode 2 Input (Hidden by default) -->
+        <div class="field" id="box_monthly_exp" style="display: none;">
+          <label>Starting Monthly Withdrawal (₹)</label>
+          <input type="text" inputmode="numeric" data-indian-currency id="in_monthly_exp" value="1,00,000">
+        </div>
+      </div>
+
+      <div class="section-label">Market Assumptions</div>
+      <div class="field-row">
+        <div class="field">
+          <label>Equity Return (%)</label>
+          <input type="number" id="in_r_eq" value="12">
+        </div>
+        <div class="field">
+          <label>Debt/Liquid Return (%)</label>
+          <input type="number" id="in_r_d" value="6">
+        </div>
+        <div class="field">
+          <label>Inflation Rate (%)</label>
+          <input type="number" id="in_inf" value="6">
+        </div>
+      </div>
+
+      <button type="button" class="calc-btn" id="calc-btn" onclick="calculateRebalancing()">Find Safe Monthly Withdrawal &darr;</button>
+    </div>
+
+    <!-- RESULTS SECTION -->
+    <div class="calc-results" id="results-section">
+      
+      <div class="dashboard-grid">
+        <div class="res-card">
+          <div class="res-title" id="res-primary-label">Safe Monthly Withdrawal</div>
+          <div class="res-val" style="color: var(--primary);" id="res-primary-val">₹0</div>
+        </div>
+        <div class="res-card">
+          <div class="res-title">Starting Equity (50%)</div>
+          <div class="res-val" id="res-eq">₹0</div>
+        </div>
+        <div class="res-card">
+          <div class="res-title">Starting Debt (50%)</div>
+          <div class="res-val" id="res-debt">₹0</div>
+        </div>
+      </div>
+
+      <details id="detailsPanel" open>
+        <summary>View Year-by-Year Breakdown ▾</summary>
+        <div class="table-wrapper">
+          <table class="detail-table">
+            <thead>
+              <tr>
+                <th>Year</th>
+                <th>Annual Withdrawal</th>
+                <th>Equity Balance</th>
+                <th>Debt Balance</th>
+                <th>Total Corpus</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="result-body">
+              <tr><td colspan="6" style="text-align: center; padding: 20px;">Click calculate to run the simulation.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </details>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-links">
+    <a href="index.html">Home</a><a href="index.html#calculators">Calculators</a><a href="blog.html">Blog</a><a href="about.html">About</a>
+  </div>
+  <div class="footer-social">
+    <a href="https://www.reddit.com/r/Rupeevibe/" class="social-link" target="_blank" rel="noopener noreferrer" aria-label="Join RupeeVibe on Reddit">
+      <svg class="social-icon" viewBox="0 0 24 24" role="img" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="7"></circle><circle cx="9.5" cy="12.5" r="1" fill="currentColor" stroke="none"></circle><circle cx="14.5" cy="12.5" r="1" fill="currentColor" stroke="none"></circle><path d="M9 15.5c1.7 1.2 4.3 1.2 6 0M15.5 7.5l1-4 3 1M17.5 8.5c1.7-1 3.5-.2 3.5 1.2 0 1-.8 1.7-2 1.9M6.5 8.5C4.8 7.5 3 8.3 3 9.7c0 1 .8 1.7 2 1.9"></path></svg>
+      <span>Join us on Reddit</span>
+    </a>
+  </div>
+  <p>© 2026 RupeeVibe. All calculations are estimates for planning purposes only. Not financial advice.</p>
+</footer>
+
+<script>
+function toggleMenu() {
+  document.querySelector('.nav-links').classList.toggle('mobile-open');
+}
+
+function fmt(n) {
+  if (n <= 0) return '₹0';
+  return '₹' + Math.round(n).toLocaleString('en-IN');
+}
+
+let mode = 'find_amount';
+
+function setMode(newMode) {
+  mode = newMode;
+  document.getElementById('tab-find-amount').classList.toggle('active', mode === 'find_amount');
+  document.getElementById('tab-find-years').classList.toggle('active', mode === 'find_years');
+  
+  const boxTargetYears = document.getElementById('box_target_years');
+  const boxMonthlyExp = document.getElementById('box_monthly_exp');
+  const calcBtn = document.getElementById('calc-btn');
+  const primaryLabel = document.getElementById('res-primary-label');
+
+  if (mode === 'find_amount') {
+    boxTargetYears.style.display = 'block';
+    boxMonthlyExp.style.display = 'none';
+    calcBtn.innerHTML = "Find Safe Monthly Withdrawal &darr;";
+    primaryLabel.textContent = "Safe Monthly Withdrawal";
+  } else {
+    boxTargetYears.style.display = 'none';
+    boxMonthlyExp.style.display = 'block';
+    calcBtn.innerHTML = "Find Years to Depletion &darr;";
+    primaryLabel.textContent = "Portfolio Longevity";
+  }
+}
+
+// Engine to test if a specific starting withdrawal survives the target timeframe
+function checkSurvival(corpus, initialMonthlyExp, targetYears, r_eq, r_d, inf) {
+  let eq = corpus * 0.5;
+  let debt = corpus * 0.5;
+  let exp = initialMonthlyExp * 12;
+  
+  for(let y=1; y<=targetYears; y++) {
+    let total = eq + debt;
+    if (total <= 0) return false;
+    
+    // Proportional withdrawal
+    if (exp > total) return false; 
+    
+    eq -= exp * (eq/total);
+    debt -= exp * (debt/total);
+    
+    // Market Growth
+    eq *= (1 + r_eq);
+    debt *= (1 + r_d);
+    
+    total = eq + debt;
+    if (total <= 0) return false;
+    
+    // Check 60% Rebalance Threshold
+    if (eq / total > 0.60) {
+      eq = total * 0.5;
+      debt = total * 0.5;
+    }
+    
+    exp *= (1 + inf); // Inflate next year's expense
+  }
+  return true; 
+}
+
+// Binary Search to zero in on the maximum safe withdrawal rate
+function findSafeWithdrawal(corpus, targetYears, r_eq, r_d, inf) {
+  let low = 0;
+  let high = corpus;
+  let best = 0;
+  
+  for(let i=0; i<60; i++) {
+    let mid = (low + high) / 2;
+    if (checkSurvival(corpus, mid, targetYears, r_eq, r_d, inf)) {
+      best = mid;
+      low = mid; // Survived, try withdrawing more
+    } else {
+      high = mid; // Failed, withdraw less
+    }
+  }
+  return best;
+}
+
+// Run the full simulation array for the table display
+function runSimulation(corpus, initialMonthlyExp, r_eq, r_d, inf, maxYears = 100) {
+  let eq = corpus * 0.5;
+  let debt = corpus * 0.5;
+  let exp = initialMonthlyExp * 12;
+  let history = [];
+  
+  for(let y=1; y<=maxYears; y++) {
+    let total = eq + debt;
+    if (total <= 0) break;
+    
+    let actualWithdrawal = Math.min(exp, total);
+    let ratioEq = eq / total;
+    let ratioDebt = debt / total;
+    
+    eq -= actualWithdrawal * ratioEq;
+    debt -= actualWithdrawal * ratioDebt;
+    
+    eq *= (1 + r_eq);
+    debt *= (1 + r_d);
+    total = eq + debt;
+    
+    let rebalanced = false;
+    if (total > 0 && (eq / total > 0.60)) {
+      eq = total * 0.5;
+      debt = total * 0.5;
+      rebalanced = true;
+    }
+    
+    history.push({
+      year: y,
+      withdrawal: actualWithdrawal,
+      eq: Math.max(0, eq),
+      debt: Math.max(0, debt),
+      total: Math.max(0, total),
+      rebalanced: rebalanced
+    });
+    
+    if (total <= 1) break; // Corpus depleted
+    exp *= (1 + inf);
+  }
+  return history;
+}
+
+function calculateRebalancing() {
+  const tbody = document.getElementById('result-body');
+  tbody.innerHTML = '';
+
+  let corpus = parseIndianNumber(document.getElementById('in_corpus').value);
+  let r_eq = parseFloat(document.getElementById('in_r_eq').value) / 100 || 0;
+  let r_d = parseFloat(document.getElementById('in_r_d').value) / 100 || 0;
+  let inf = parseFloat(document.getElementById('in_inf').value) / 100 || 0;
+  
+  // Dashboard Init
+  document.getElementById('res-eq').textContent = fmt(corpus * 0.5);
+  document.getElementById('res-debt').textContent = fmt(corpus * 0.5);
+
+  let history = [];
+  let primaryValStr = "";
+
+  if (mode === 'find_amount') {
+    let targetYears = parseInt(document.getElementById('in_target_years').value) || 1;
+    let safeExp = findSafeWithdrawal(corpus, targetYears, r_eq, r_d, inf);
+    primaryValStr = fmt(safeExp);
+    history = runSimulation(corpus, safeExp, r_eq, r_d, inf, targetYears);
+    
+  } else {
+    let monthlyExp = parseIndianNumber(document.getElementById('in_monthly_exp').value);
+    history = runSimulation(corpus, monthlyExp, r_eq, r_d, inf, 100);
+    
+    let yearsLasted = history.length;
+    if (yearsLasted >= 100 && history[history.length-1].total > 1000) {
+      primaryValStr = "100+ Years";
+    } else {
+      primaryValStr = yearsLasted + " Years";
+    }
+  }
+
+  // Update Primary Dashboard Value
+  document.getElementById('res-primary-val').textContent = primaryValStr;
+
+  // Render Table
+  let htmlContent = "";
+  history.forEach(row => {
+    let classRebalance = row.rebalanced ? 'rebalance-col' : '';
+    let classTotal = row.total < row.withdrawal ? 'danger-text' : '';
+    let actionText = row.rebalanced ? '🔄 Rebalanced' : '-';
+
+    htmlContent += `
+      <tr>
+        <td>Year ${row.year}</td>
+        <td>${fmt(row.withdrawal)}</td>
+        <td>${fmt(row.eq)}</td>
+        <td>${fmt(row.debt)}</td>
+        <td class="${classTotal}" style="font-weight:bold;">${fmt(row.total)}</td>
+        <td class="${classRebalance}">${actionText}</td>
+      </tr>
+    `;
+  });
+
+  tbody.innerHTML = htmlContent;
+}
+
+window.onload = function() {
+  document.querySelectorAll('input[type=number]').forEach(input => {
+    input.addEventListener('wheel', e => e.preventDefault());
+  });
+};
+</script>
+
+</body>
+</html>

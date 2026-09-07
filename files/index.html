@@ -22,8 +22,8 @@
 <style>
   /* ── Hero ── */
   .hero {
-    background: var(--navy);
-    padding: 72px 24px 64px;
+    background: linear-gradient(135deg, #0f2744 0%, #183f66 55%, #24607a 100%);
+    padding: 44px 24px 40px;
     text-align: center;
     position: relative;
     overflow: hidden;
@@ -32,7 +32,9 @@
     content: '';
     position: absolute;
     inset: 0;
-    background: radial-gradient(ellipse 70% 60% at 50% 110%, rgba(224,123,42,0.18) 0%, transparent 70%);
+    background:
+      radial-gradient(ellipse 60% 90% at 12% 100%, rgba(224,123,42,0.20) 0%, transparent 68%),
+      radial-gradient(ellipse 55% 80% at 92% 0%, rgba(255,255,255,0.08) 0%, transparent 70%);
     pointer-events: none;
   }
   .hero-badge {
@@ -45,54 +47,36 @@
     text-transform: uppercase;
     padding: 5px 14px;
     border-radius: 20px;
-    margin-bottom: 20px;
+    margin-bottom: 12px;
     border: 1px solid rgba(224,123,42,0.3);
   }
   .hero h1 {
     font-family: var(--font-display);
-    font-size: clamp(34px, 5vw, 54px);
+    font-size: clamp(32px, 4vw, 46px);
     color: #fff;
     line-height: 1.18;
     font-weight: 600;
     max-width: 680px;
-    margin: 0 auto 18px;
+    margin: 0 auto 12px;
   }
   .hero h1 em { color: var(--saffron); font-style: italic; }
   .hero p {
     color: rgba(255,255,255,0.65);
-    font-size: 17px;
+    font-size: 16px;
     max-width: 520px;
-    margin: 0 auto 32px;
-    line-height: 1.7;
+    margin: 0 auto 22px;
+    line-height: 1.55;
   }
   .hero-cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
 
-  /* ── Stats bar ── */
-  .stats-bar {
-    background: var(--card);
-    border-bottom: 1px solid var(--border);
+  @media (max-width: 600px) {
+    .hero { padding: 32px 20px 30px; }
   }
-  .stats-inner {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 20px 24px;
-    display: flex;
-    justify-content: center;
-    gap: 48px;
-    flex-wrap: wrap;
-  }
-  .stat { text-align: center; }
-  .stat-num {
-    font-family: var(--font-display);
-    font-size: 26px;
-    font-weight: 600;
-    color: var(--navy);
-    line-height: 1;
-  }
-  .stat-label { font-size: 12px; color: var(--text-light); margin-top: 3px; }
 
   /* ── Section headings ── */
   .section { padding: 64px 24px; }
+  #calculators { padding-top: 36px; }
+  .ad-pending { display: none; }
   .section-inner { max-width: 1100px; margin: 0 auto; }
   .section-label {
     font-size: 12px;
@@ -149,6 +133,7 @@
   .tile-home::after { background: linear-gradient(90deg, var(--saffron), #f5a623); }
   .tile-debt::after { background: linear-gradient(90deg, #7c3aed, #a855f7); }
   .tile-fire::after { background: linear-gradient(90deg, var(--saffron), #ef4444); }
+  .tile-rebalance::after { background: linear-gradient(90deg, #2563eb, var(--saffron)); }
 
   .tile-icon {
     width: 52px; height: 52px;
@@ -227,7 +212,6 @@
   .hero-cta { animation-delay: 0.2s; }
 
   @media (max-width: 600px) {
-    .stats-inner { gap: 28px; }
     .section { padding: 48px 20px; }
   }
 </style>
@@ -263,27 +247,15 @@
   </div>
 </section>
 
-<!-- ── Stats bar ── -->
-<div class="stats-bar">
-  <div class="stats-inner">
-    <div class="stat"><div class="stat-num">7</div><div class="stat-label">Free Calculators</div></div>
-    <div class="stat"><div class="stat-num">₹</div><div class="stat-label">Rupee-First Design</div></div>
-    <div class="stat"><div class="stat-num">0</div><div class="stat-label">Sign-ups Required</div></div>
-    <div class="stat"><div class="stat-num">100%</div><div class="stat-label">Free Forever</div></div>
-  </div>
-</div>
-
-<!-- ── Ad slot (top banner) ── -->
-<div style="max-width:1100px; margin:24px auto; padding:0 24px;">
+<!-- ── Ad slot (hidden until AdSense approval) ── -->
+<div class="ad-pending" style="max-width:1100px; margin:24px auto; padding:0 24px;">
   <div class="ad-slot ad-banner">
-    <!-- AdSense Auto Ad or paste your ad unit code here -->
     <ins class="adsbygoogle"
       style="display:block"
       data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
       data-ad-slot="XXXXXXXXXX"
       data-ad-format="auto"
       data-full-width-responsive="true"></ins>
-    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
   </div>
 </div>
 
@@ -321,6 +293,15 @@
         <div class="tile-title">Retirement Laddering Strategy Calculator</div>
         <p class="tile-desc">Plan a bucket-based retirement income strategy across liquid, balanced, and equity investments, with automatic waterfall refills and a dedicated emergency fund.</p>
         <div class="tile-cta">Build your retirement ladder <span class="tile-arrow">→</span></div>
+      </a>
+
+      <!-- 50:50 Portfolio Rebalancing -->
+      <a href="50-50-withdrawal.html" class="calc-tile tile-rebalance">
+        <div class="tile-icon tile-icon-blue">⚖️</div>
+        <span class="tile-tag tag-green">Retirement</span>
+        <div class="tile-title">50:50 Portfolio Rebalancing Calculator</div>
+        <p class="tile-desc">Estimate a sustainable withdrawal from a 50% equity and 50% debt portfolio, with automatic rebalancing when equity crosses 60%.</p>
+        <div class="tile-cta">Plan your withdrawals <span class="tile-arrow">→</span></div>
       </a>
 
       <!-- SIP -->
