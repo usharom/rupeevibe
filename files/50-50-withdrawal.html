@@ -16,7 +16,7 @@
   gtag('config', 'G-GENRJHSEDE');
 </script>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&display=swap');
 
   /* --- RUPEEVIBE BASE STYLES --- */
   :root {
@@ -27,8 +27,8 @@
     --text-light: #9ca3af;
     --bg: #f5f7fa;
     --radius-sm: 8px;
-    --font-body: 'Plus Jakarta Sans', sans-serif;
-    --font-display: 'Fraunces', Georgia, serif;
+    --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --font-display: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
     --primary: #e07b2a;
     --saffron: #e07b2a;
   }
@@ -123,6 +123,7 @@
 
   /* Tab System */
   .tab-container {
+    flex-wrap: wrap;
     display: flex;
     gap: 10px;
     margin-bottom: 25px;
@@ -134,7 +135,7 @@
     flex: 1;
     padding: 12px;
     background: transparent;
-    border: none;
+    border: 1px solid #9aafc5;
     border-radius: 6px;
     cursor: pointer;
     font-family: var(--font-body);
@@ -145,6 +146,7 @@
   }
   .tab-btn.active {
     background: white;
+    border-color: var(--navy);
     color: var(--navy);
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
   }
@@ -239,6 +241,21 @@
   .rebalance-col { color: #059669 !important; font-weight: 600; background: #ecfdf5; }
   .danger-text { color: #dc2626 !important; font-weight: bold; }
 
+  .detail-table th { white-space: normal; }
+  .detail-table .action-cell { white-space: normal; overflow-wrap: anywhere; min-width: 130px; max-width: 190px; text-align: left; line-height: 1.5; }
+  .detail-table .context-cell { white-space: normal; min-width: 110px; max-width: 160px; text-align: left; }
+  @media (max-width: 760px) {
+    .calc-form, .calc-results { padding: 16px; }
+    .detail-table, .detail-table tbody { display: block; width: 100%; }
+    .detail-table thead { display: none; }
+    .detail-table tr { display: block; margin-bottom: 16px; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+    .detail-table td { display: flex; justify-content: space-between; gap: 16px; padding: 9px 12px; white-space: normal; text-align: right; }
+    .detail-table td[data-label]::before { content: attr(data-label); text-align: left; font-weight: 600; color: var(--navy); flex: 0 0 40%; }
+    .detail-table td:first-child { background: var(--navy-light); }
+    .detail-table td:last-child { border-bottom: 0; }
+    .detail-table .action-cell, .detail-table .context-cell { min-width: 0; max-width: none; text-align: right; }
+  }
+
   /* Details Panel Toggle */
   details summary {
     display: list-item; 
@@ -297,21 +314,21 @@
   }
   .tool-steps {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: 1fr;
     gap: 22px 28px;
     padding: 24px 28px 28px;
     margin: 0;
     list-style: none;
     counter-reset: tool-step;
   }
-  .tool-steps li {
+  .tool-steps > li {
     position: relative;
     padding-left: 48px;
     color: var(--text-muted);
     line-height: 1.7;
     counter-increment: tool-step;
   }
-  .tool-steps li::before {
+  .tool-steps > li::before {
     content: counter(tool-step);
     position: absolute;
     top: 1px;
@@ -325,6 +342,13 @@
     color: #b45309;
     font-weight: 700;
   }
+  .tool-steps p { margin: 0 0 12px; }
+  .tool-steps p:last-child { margin-bottom: 0; }
+  .tool-steps .guide-wide { grid-column: 1 / -1; }
+  .guide-list { margin: 10px 0 0; padding-left: 22px; list-style: disc; }
+  .guide-list > li { padding-left: 4px; margin-bottom: 12px; }
+  .guide-list > li:last-child { margin-bottom: 0; }
+  .tool-steps .guide-note { margin-top: 16px; font-size: 13px; }
   .tool-steps strong { display: block; margin-bottom: 3px; color: var(--navy); }
   .mode-name { color: var(--navy); font-weight: 700; }
 
@@ -364,19 +388,30 @@
     <ol class="tool-steps">
       <li>
         <strong>Choose your mode</strong>
-        Select <span class="mode-name">Find Safe Withdrawal</span> to calculate a sustainable monthly amount, or <span class="mode-name">Find Years to Depletion</span> to test how long a chosen withdrawal may last.
+        <ul class="guide-list">
+<li><span class="mode-name">Find Safe Withdrawal:</span> Find a monthly amount that funds your target years without emergency refills or direct equity withdrawals under your assumptions.</li>
+        <li><span class="mode-name">Find Years to Depletion:</span> Test a chosen withdrawal with emergency refills available.</li>
+        <li><span class="mode-name">Nifty Mar 2006&#8211;Mar 2026:</span> Replay the supplied 20 March-to-March returns with your chosen withdrawal.</li>
+        </ul>
       </li>
       <li>
         <strong>Enter your portfolio details</strong>
-        Add your total starting corpus and either your target retirement duration or current monthly withdrawal, depending on the selected mode.
+        <p>Enter your starting corpus, then choose a target duration or starting monthly withdrawal for your selected mode.</p>
+        <p>The portfolio starts with 50% in equity and 50% in debt.</p>
       </li>
-      <li>
+      <li class="guide-wide">
         <strong>Set your market assumptions</strong>
-        Enter expected equity and debt returns along with inflation. Withdrawals automatically increase each year to preserve purchasing power.
+        <p>Set equity return, debt return, and inflation. The Nifty tab replaces the fixed equity return with the supplied annual returns.</p>
+        <p>Each year's withdrawal is taken before growth, from debt first. In manual and historical simulations, equity covers any shortfall. Withdrawals rise with inflation; monthly income is the annual withdrawal divided by 12.</p>
       </li>
-      <li>
-        <strong>Review automatic rebalancing</strong>
-        The portfolio starts at 50% equity and 50% debt. When equity exceeds 60%, gains are swept into debt and the portfolio returns to a 50:50 allocation.
+      <li class="guide-wide">
+        <strong>Understand the rebalancing rules</strong>
+        <ul class="guide-list">
+          <li><span class="mode-name">Spending buffer comes first</span> After growth, if equity has grown and exceeds 65%, a full 50:50 rebalance takes priority when it also leaves at least two years of withdrawals in debt. Otherwise, debt below twice the current annual withdrawal is topped up from available equity. Refills bypass allocation thresholds and cooldowns, target the spending buffer, and do not reset the rebalance timer. Safe-withdrawal plans must never need this refill.</li>
+          <li><span class="mode-name">Standard rebalance: above 60%</span> With the buffer funded, restore 50:50 when equity exceeds 60%, its value is higher than at the start of the period, and at least three years have passed since the last rebalance.</li>
+          <li><span class="mode-name">Book more profits when markets rise strongly</span> In a bull market, your equity investments can grow quickly. If equity becomes more than 65% of your portfolio and moving back to 50:50 covers your spending reserve, the calculator sells some equity and moves the money into debt, bringing both back to 50% each. This books profits sooner, without waiting three years. Equity must also be worth more than at the start of the period. A higher percentage caused only by debt withdrawals does not qualify.</li>
+        </ul>
+        <p class="guide-note">The first move back to 50:50 can happen in any year. After each such move, the three-year wait starts again, unless the above-65% rule applies. The table shows your balances after money has been moved; the Action column explains what happened.</p>
       </li>
     </ol>
   </details>
@@ -388,6 +423,7 @@
       <div class="tab-container">
         <button class="tab-btn active" id="tab-find-amount" onclick="setMode('find_amount')">Find Safe Withdrawal</button>
         <button class="tab-btn" id="tab-find-years" onclick="setMode('find_years')">Find Years to Depletion</button>
+        <button class="tab-btn" id="tab-historical" onclick="setMode('historical')">Nifty Mar 2006–Mar 2026</button>
       </div>
 
       <div class="field-row">
@@ -399,7 +435,7 @@
         <!-- Mode 1 Input -->
         <div class="field" id="box_target_years">
           <label>Target Years to Last</label>
-          <input type="number" id="in_target_years" value="30">
+          <input type="number" id="in_target_years" value="20">
         </div>
 
         <!-- Mode 2 Input (Hidden by default) -->
@@ -409,6 +445,7 @@
         </div>
       </div>
 
+      <p id="historical-note" hidden>First, open <strong>Find Safe Withdrawal</strong>, set the target to <strong>20 years</strong>, and calculate your monthly withdrawal. Enter that amount here to test how the strategy would have performed using <strong>Nifty50 TRI March-to-March returns from March 2006 to March 2026</strong>, including market rises and falls. Keep the same starting corpus, debt return, and inflation for a like-for-like comparison. This replay uses TRI returns, which include reinvested dividends. Actual fund returns may differ because of costs and tracking differences.</p>
       <div class="section-label">Market Assumptions</div>
       <div class="field-row">
         <div class="field">
@@ -448,20 +485,24 @@
 
       <details id="detailsPanel" open>
         <summary>View Year-by-Year Breakdown ▾</summary>
+        <p style="color:var(--text-muted); font-size:14px; line-height:1.6; margin:16px 0;">Each row follows this order: <strong>withdraw at the start of the period &#8594; apply that period's returns &#8594; refill debt or rebalance at the end.</strong> The equity percentage in Action is measured after returns, before the transfer. Balances shown are after the transfer. Allocation rebalancing also requires equity to be worth more than at the start of the period. Emergency debt refills can still happen during a falling market to fund spending.</p>
         <div class="table-wrapper">
           <table class="detail-table">
             <thead>
               <tr>
                 <th>Year</th>
+                <th class="historical-column" hidden>Nifty50 TRI Return</th>
+                <th class="historical-column" hidden>Market Context</th>
+                <th>Monthly Income</th>
                 <th>Annual Withdrawal</th>
-                <th>Equity Balance</th>
-                <th>Debt Balance</th>
+                <th>Ending Equity</th>
+                <th>Ending Debt</th>
                 <th>Total Corpus</th>
-                <th>Action</th>
+                <th>End-of-Period Action</th>
               </tr>
             </thead>
             <tbody id="result-body">
-              <tr><td colspan="6" style="text-align: center; padding: 20px;">Click calculate to run the simulation.</td></tr>
+              <tr><td colspan="7" style="text-align: center; padding: 20px;">Click calculate to run the simulation.</td></tr>
             </tbody>
           </table>
         </div>
@@ -494,9 +535,20 @@ function fmt(n) {
 }
 
 let mode = 'find_amount';
+const monthlyWithdrawalByMode = { find_years: '1,00,000', historical: '75,000' };
 
 function setMode(newMode) {
+  const monthlyInput = document.getElementById('in_monthly_exp');
+  if (mode in monthlyWithdrawalByMode) monthlyWithdrawalByMode[mode] = monthlyInput.value;
+  if (newMode in monthlyWithdrawalByMode) monthlyInput.value = monthlyWithdrawalByMode[newMode];
   mode = newMode;
+  const historical = mode === 'historical';
+  document.getElementById('tab-historical').classList.toggle('active', historical);
+  document.getElementById('historical-note').hidden = !historical;
+  document.getElementById('in_r_eq').parentElement.hidden = historical;
+  document.querySelectorAll('.historical-column').forEach(el => el.hidden = !historical);
+  document.getElementById('result-body').innerHTML = '<tr><td colspan="' + (historical ? 9 : 7) + '">Click calculate to run the simulation.</td></tr>';
+  document.getElementById('res-primary-val').textContent = '—';
   document.getElementById('tab-find-amount').classList.toggle('active', mode === 'find_amount');
   document.getElementById('tab-find-years').classList.toggle('active', mode === 'find_years');
   
@@ -514,40 +566,170 @@ function setMode(newMode) {
     boxTargetYears.style.display = 'none';
     boxMonthlyExp.style.display = 'block';
     calcBtn.innerHTML = "Find Years to Depletion &darr;";
-    primaryLabel.textContent = "Portfolio Longevity";
+    primaryLabel.textContent = historical ? "Historical Years Fully Funded" : "Portfolio Longevity";
+    if (historical) calcBtn.textContent = "Run Nifty Historical Simulation";
   }
 }
 
-// Engine to test if a specific starting withdrawal survives the target timeframe
+// User-supplied Nifty50 TRI returns, used as provided; not independently verified.
+// Periods cover the final trading days of March and include reinvested dividends.
+const NIFTY_HISTORY = [
+  {
+    "year": "Mar 2006 – Mar 2007",
+    "returnPct": 13.9,
+    "context": "Market gain"
+  },
+  {
+    "year": "Mar 2007 – Mar 2008",
+    "returnPct": 25.4,
+    "context": "Market gain"
+  },
+  {
+    "year": "Mar 2008 – Mar 2009",
+    "returnPct": -35.3,
+    "context": "Market decline"
+  },
+  {
+    "year": "Mar 2009 – Mar 2010",
+    "returnPct": 75.4,
+    "context": "Market gain"
+  },
+  {
+    "year": "Mar 2010 – Mar 2011",
+    "returnPct": 12.5,
+    "context": "Market gain"
+  },
+  {
+    "year": "Mar 2011 – Mar 2012",
+    "returnPct": -8,
+    "context": "Market decline"
+  },
+  {
+    "year": "Mar 2012 – Mar 2013",
+    "returnPct": 8.8,
+    "context": "Market gain"
+  },
+  {
+    "year": "Mar 2013 – Mar 2014",
+    "returnPct": 19.5,
+    "context": "Market gain"
+  },
+  {
+    "year": "Mar 2014 – Mar 2015",
+    "returnPct": 28.3,
+    "context": "Market gain"
+  },
+  {
+    "year": "Mar 2015 – Mar 2016",
+    "returnPct": -7.6,
+    "context": "Market decline"
+  },
+  {
+    "year": "Mar 2016 – Mar 2017",
+    "returnPct": 20.2,
+    "context": "Market gain"
+  },
+  {
+    "year": "Mar 2017 – Mar 2018",
+    "returnPct": 11.8,
+    "context": "Market gain"
+  },
+  {
+    "year": "Mar 2018 – Mar 2019",
+    "returnPct": 16.4,
+    "context": "Market gain"
+  },
+  {
+    "year": "Mar 2019 – Mar 2020",
+    "returnPct": -25,
+    "context": "Market decline"
+  },
+  {
+    "year": "Mar 2020 – Mar 2021",
+    "returnPct": 72.5,
+    "context": "Market gain"
+  },
+  {
+    "year": "Mar 2021 – Mar 2022",
+    "returnPct": 20.3,
+    "context": "Market gain"
+  },
+  {
+    "year": "Mar 2022 – Mar 2023",
+    "returnPct": 0.6,
+    "context": "Market gain"
+  },
+  {
+    "year": "Mar 2023 – Mar 2024",
+    "returnPct": 30.1,
+    "context": "Market gain"
+  },
+  {
+    "year": "Mar 2024 – Mar 2025",
+    "returnPct": 7.5,
+    "context": "Market gain"
+  },
+  {
+    "year": "Mar 2025 – Mar 2026",
+    "returnPct": -3.9,
+    "context": "Market decline"
+  }
+];
+
+const REBALANCE_THRESHOLD = 0.60;
+const EMERGENCY_REBALANCE_THRESHOLD = 0.65;
+const REBALANCE_COOLDOWN_YEARS = 3;
+
+// Evaluate after withdrawals and growth; restoring the spending buffer takes priority.
+function getRebalanceDecision(equityShare, debt, annualWithdrawal, yearsSinceLastRebalance, equityGrew, total) {
+  // Prefer a full profit-taking rebalance if it also restores the spending buffer.
+  if (equityGrew && equityShare > EMERGENCY_REBALANCE_THRESHOLD && total * 0.5 >= annualWithdrawal * 2) return 'bull';
+  if (debt < annualWithdrawal * 2) return 'refill';
+  // Spending refills remain available, but allocation trims require absolute growth.
+  if (equityShare > REBALANCE_THRESHOLD && !equityGrew) return 'no_growth';
+  // Evaluate the 65% override before the standard cooldown.
+  if (equityShare > EMERGENCY_REBALANCE_THRESHOLD) return 'bull';
+  if (equityShare > REBALANCE_THRESHOLD) {
+    if (yearsSinceLastRebalance < REBALANCE_COOLDOWN_YEARS) return 'blocked';
+    return 'standard';
+  }
+  return 'none';
+}
+
+// Accept only plans that fund the target timeframe without emergency equity sales.
 function checkSurvival(corpus, initialMonthlyExp, targetYears, r_eq, r_d, inf) {
   let eq = corpus * 0.5;
   let debt = corpus * 0.5;
   let exp = initialMonthlyExp * 12;
+  let lastRebalanceYear = -3;
   
   for(let y=1; y<=targetYears; y++) {
-    let total = eq + debt;
-    if (total <= 0) return false;
+    const startingEquity = eq;
+    // Safe-withdrawal plans must fund expenses entirely from debt.
+    if (debt < exp) return false;
+    debt -= exp;
     
-    // Proportional withdrawal
-    if (exp > total) return false; 
-    
-    eq -= exp * (eq/total);
-    debt -= exp * (debt/total);
-    
-    // Market Growth
+    // 2. Compound growth
     eq *= (1 + r_eq);
     debt *= (1 + r_d);
     
-    total = eq + debt;
+    let total = eq + debt;
     if (total <= 0) return false;
     
-    // Check 60% Rebalance Threshold
-    if (eq / total > 0.60) {
-      eq = total * 0.5;
-      debt = total * 0.5;
+    // 3. Apply the standard or emergency rebalance rules
+    const yearsSinceLastRebalance = y - lastRebalanceYear;
+    const decision = getRebalanceDecision(eq / total, debt, exp, yearsSinceLastRebalance, eq > startingEquity, total);
+    if (decision === 'refill') {
+      return false;
+    } else if (decision === 'standard' || decision === 'bull') {
+      let targetEq = total * 0.5;
+      let harvest = eq - targetEq;
+      eq = targetEq;
+      debt += harvest;
+      lastRebalanceYear = y;
     }
     
-    exp *= (1 + inf); // Inflate next year's expense
+    exp *= (1 + inf); // Step up next year's withdrawal for inflation
   }
   return true; 
 }
@@ -571,44 +753,70 @@ function findSafeWithdrawal(corpus, targetYears, r_eq, r_d, inf) {
 }
 
 // Run the full simulation array for the table display
-function runSimulation(corpus, initialMonthlyExp, r_eq, r_d, inf, maxYears = 100) {
+function runSimulation(corpus, initialMonthlyExp, r_eq, r_d, inf, maxYears = 100, returnHistory = null) {
   let eq = corpus * 0.5;
   let debt = corpus * 0.5;
   let exp = initialMonthlyExp * 12;
+  let lastRebalanceYear = -3;
   let history = [];
   
-  for(let y=1; y<=maxYears; y++) {
+  const yearsToRun = returnHistory ? Math.min(maxYears, returnHistory.length) : maxYears;
+  for(let y=1; y<=yearsToRun; y++) {
+    const startingEquity = eq;
     let total = eq + debt;
     if (total <= 0) break;
     
+    // Cap at available corpus; equity covers any debt shortfall.
     let actualWithdrawal = Math.min(exp, total);
-    let ratioEq = eq / total;
-    let ratioDebt = debt / total;
+    const debtWithdrawal = Math.min(actualWithdrawal, debt);
+    debt -= debtWithdrawal;
+    eq -= actualWithdrawal - debtWithdrawal;
     
-    eq -= actualWithdrawal * ratioEq;
-    debt -= actualWithdrawal * ratioDebt;
-    
-    eq *= (1 + r_eq);
+    // Compound growth
+    const marketYear = returnHistory ? returnHistory[y - 1] : null;
+    const equityReturn = marketYear ? marketYear.returnPct / 100 : r_eq;
+    eq *= (1 + equityReturn);
     debt *= (1 + r_d);
     total = eq + debt;
     
+    const equityShareBeforeRebalance = total > 0 ? eq / total : 0;
+    // Apply the standard or emergency rebalance rules
     let rebalanced = false;
-    if (total > 0 && (eq / total > 0.60)) {
-      eq = total * 0.5;
-      debt = total * 0.5;
+    const yearsSinceLastRebalance = y - lastRebalanceYear;
+    const decision = getRebalanceDecision(equityShareBeforeRebalance, debt, exp, yearsSinceLastRebalance, eq > startingEquity, total);
+    let debtRefill = 0;
+    if (total > 0 && decision === 'refill') {
+      debtRefill = Math.min(Math.max(0, eq), Math.max(0, exp * 2 - debt));
+      eq -= debtRefill;
+      debt += debtRefill;
+    } else if (total > 0 && (decision === 'standard' || decision === 'bull')) {
+      let targetEq = total * 0.5;
+      let harvest = eq - targetEq;
+      eq = targetEq;
+      debt += harvest;
+      lastRebalanceYear = y;
       rebalanced = true;
     }
     
     history.push({
       year: y,
+      calendarYear: marketYear ? marketYear.year : null,
+      equityReturn: equityReturn,
+      marketContext: marketYear ? marketYear.context : null,
+      fullyFunded: actualWithdrawal >= exp,
       withdrawal: actualWithdrawal,
       eq: Math.max(0, eq),
       debt: Math.max(0, debt),
       total: Math.max(0, total),
+      equityShareBeforeRebalance: equityShareBeforeRebalance,
+      debtRefill: debtRefill,
+      debtBufferTarget: exp * 2,
+      rebalanceDecision: decision,
       rebalanced: rebalanced
     });
     
-    if (total <= 1) break; // Corpus depleted
+    // Terminate if the combined portfolio cannot fund the withdrawal or depletes
+    if (actualWithdrawal < exp || total <= 1) break;
     exp *= (1 + inf);
   }
   return history;
@@ -636,6 +844,10 @@ function calculateRebalancing() {
     primaryValStr = fmt(safeExp);
     history = runSimulation(corpus, safeExp, r_eq, r_d, inf, targetYears);
     
+  } else if (mode === 'historical') {
+    const monthlyExp = parseIndianNumber(document.getElementById('in_monthly_exp').value);
+    history = runSimulation(corpus, monthlyExp, r_eq, r_d, inf, NIFTY_HISTORY.length, NIFTY_HISTORY);
+    primaryValStr = history.filter(row => row.fullyFunded).length + ' / ' + NIFTY_HISTORY.length + ' Years';
   } else {
     let monthlyExp = parseIndianNumber(document.getElementById('in_monthly_exp').value);
     history = runSimulation(corpus, monthlyExp, r_eq, r_d, inf, 100);
@@ -654,18 +866,31 @@ function calculateRebalancing() {
   // Render Table
   let htmlContent = "";
   history.forEach(row => {
-    let classRebalance = row.rebalanced ? 'rebalance-col' : '';
+    let classRebalance = (row.rebalanced || row.debtRefill > 0) ? 'rebalance-col' : '';
     let classTotal = row.total < row.withdrawal ? 'danger-text' : '';
-    let actionText = row.rebalanced ? '🔄 Rebalanced' : '-';
+    let equityPercent = (row.equityShareBeforeRebalance * 100).toFixed(2) + '%';
+    let actionText = row.rebalanceDecision === 'refill'
+      ? `Debt refill: ${fmt(row.debtRefill)}${row.debt < row.debtBufferTarget ? ' (buffer not fully funded)' : ''}`
+      : row.rebalanceDecision === 'bull'
+      ? `🔄 Rebalanced (${equityPercent} equity → 50%)`
+      : row.rebalanceDecision === 'standard'
+        ? `🔄 Rebalanced (${equityPercent} equity → 50%)`
+        : row.rebalanceDecision === 'no_growth'
+          ? 'Skipped: equity did not grow'
+        : row.rebalanceDecision === 'blocked'
+          ? 'Skipped: cooldown'
+          : `No rebalance (${equityPercent} equity)`;
 
     htmlContent += `
       <tr>
-        <td>Year ${row.year}</td>
-        <td>${fmt(row.withdrawal)}</td>
-        <td>${fmt(row.eq)}</td>
-        <td>${fmt(row.debt)}</td>
-        <td class="${classTotal}" style="font-weight:bold;">${fmt(row.total)}</td>
-        <td class="${classRebalance}">${actionText}</td>
+        <td data-label="Year">${row.calendarYear || "Year " + row.year}</td>
+        ${mode === 'historical' ? `<td data-label="Nifty50 TRI return" class="${row.equityReturn < 0 ? 'danger-text' : ''}">${row.equityReturn >= 0 ? '+' : ''}${(row.equityReturn * 100).toFixed(1)}%</td><td data-label="Market context" class="context-cell">${row.marketContext}</td>` : ''}
+        <td data-label="Monthly income">${fmt(row.withdrawal / 12)}</td>
+        <td data-label="Annual withdrawal">${fmt(row.withdrawal)}</td>
+        <td data-label="Equity balance">${fmt(row.eq)}</td>
+        <td data-label="Debt balance">${fmt(row.debt)}</td>
+        <td data-label="Total corpus" class="${classTotal}" style="font-weight:bold;">${fmt(row.total)}</td>
+        <td data-label="Action" class="action-cell ${classRebalance}">${actionText}</td>
       </tr>
     `;
   });
